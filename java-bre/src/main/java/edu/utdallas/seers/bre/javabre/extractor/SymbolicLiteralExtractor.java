@@ -3,22 +3,23 @@ package edu.utdallas.seers.bre.javabre.extractor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
-import edu.utdallas.seers.bre.javabre.entity.BussinesRule;
+import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class SymbolicLiteralExtractor implements RuleExtractor {
 
 	@SuppressWarnings({ "rawtypes" })
-	public List<BussinesRule> extract(JavaFileInfo info) {
+	public List<BusinessRule> extract(JavaFileInfo info) {
 
 		final String template = "A {0} is by definition {1}";
 
 		List<FieldDeclaration> constFields = info.getConstFields();
-		List<BussinesRule> rules = new ArrayList<BussinesRule>();
+		List<BusinessRule> rules = new ArrayList<BusinessRule>();
 
 		for (FieldDeclaration constField : constFields) {
 			List fragments = constField.fragments();
@@ -31,8 +32,9 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 			String brText = Utils.replaceTemplate(template, new String[] {
 					term1, literal1 });
 
-			BussinesRule rule = new BussinesRule(brText, info.getFile(),
-					constField.getStartPosition());
+			CompilationUnit cu = info.getCompilUnit();
+			BusinessRule rule = new BusinessRule(brText, info.getFile(),
+					cu.getLineNumber(constField.getStartPosition()));
 			rules.add(rule);
 
 		}

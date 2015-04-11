@@ -4,14 +4,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class JavaFileInfo {
 
 	private File file;
-	private List<TypeDeclaration> classes= new ArrayList<TypeDeclaration>();
+	private List<TypeDeclaration> classes = new ArrayList<TypeDeclaration>();
 	private List<FieldDeclaration> constFields = new ArrayList<FieldDeclaration>();
+	private CompilationUnit cu;
 
 	public File getFile() {
 		return file;
@@ -42,7 +44,13 @@ public class JavaFileInfo {
 		return "JavaFileInfo [file=" + file + ", classes=" + classes
 				+ ", constFields=" + constFields + "]";
 	}
-	
-	
+
+	public void setCompilUnit(CompilationUnit cu) {
+		this.cu = cu;
+	}
+
+	public CompilationUnit getCompilUnit() {
+		return this.cu;
+	}
 
 }
