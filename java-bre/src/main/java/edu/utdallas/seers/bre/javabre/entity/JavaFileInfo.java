@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class JavaFileInfo {
@@ -13,6 +14,7 @@ public class JavaFileInfo {
 	private File file;
 	private List<TypeDeclaration> classes = new ArrayList<TypeDeclaration>();
 	private List<FieldDeclaration> constFields = new ArrayList<FieldDeclaration>();
+	private List<IfStatement> ifStmts = new ArrayList<IfStatement>();
 	private CompilationUnit cu;
 
 	public File getFile() {
@@ -51,6 +53,14 @@ public class JavaFileInfo {
 
 	public CompilationUnit getCompilUnit() {
 		return this.cu;
+	}
+
+	public List<IfStatement> getIfStmts() {
+		return this.ifStmts;
+	}
+
+	public void setIfStmts(List<IfStatement> ifStmts) {
+		this.ifStmts = ifStmts;
 	}
 
 }

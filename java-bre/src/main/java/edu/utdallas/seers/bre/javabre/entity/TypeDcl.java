@@ -4,17 +4,15 @@ public class TypeDcl {
 
 	private String qualName;
 	private TypeDclType type;
-	private JavaFileInfo fileInfo;
 	private String name;
 
 	public enum TypeDclType {
 		CLASS, INTERFACE
 	};
 
-	public TypeDcl(String qualName, TypeDclType type, JavaFileInfo fileInfo, String name) {
+	public TypeDcl(String qualName, TypeDclType type, String name) {
 		this.setQualName(qualName);
 		this.setType(type);
-		this.setFileInfo(fileInfo);
 		this.setName(name);
 	}
 
@@ -68,14 +66,6 @@ public class TypeDcl {
 
 	public void setQualName(String qualName) {
 		this.qualName = qualName;
-	}
-
-	public JavaFileInfo getFileInfo() {
-		return fileInfo;
-	}
-
-	public void setFileInfo(JavaFileInfo fileInfo) {
-		this.fileInfo = fileInfo;
 	}
 
 	public String getName() {

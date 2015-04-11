@@ -1,17 +1,21 @@
 package edu.utdallas.seers.bre.javabre.entity;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class BusinessRule {
 
+	private static final String SEP = "; ";
 	private String text;
-	private File file;
-	private int line;
+	private HashMap<String, List<Integer>> fileLoc;
 
-	public BusinessRule(String brText, File file2, int startPosition) {
+	public BusinessRule(String brText) {
 		text = brText;
-		file = file2;
-		line = startPosition;
+		fileLoc = new HashMap<String, List<Integer>>();
 	}
 
 	public String getText() {
@@ -22,30 +26,62 @@ public class BusinessRule {
 		this.text = text;
 	}
 
-	public File getFile() {
-		return file;
-	}
-
-	public void setFile(File file) {
-		this.file = file;
-	}
-
-	public int getLine() {
-		return line;
-	}
-
-	public void setLine(int line) {
-		this.line = line;
-	}
-
 	public String[] toStringArray() {
-		return new String[] { text, file.getAbsolutePath(),
-				Integer.toString(line) };
+		String[] locs = getFileLines();
+		return new String[] { text, locs[0], locs[1] };
+	}
+
+	/**
+	 * Files = file1;file2;file3;... LOCS =
+	 * {{l11;l12;l12;...};{{l21;l22;l22;...},{{l31;l32;l32;...};...}
+	 * 
+	 * @return
+	 */
+	private String[] getFileLines() {
+		Set<Entry<String, List<Integer>>> entrySet = fileLoc.entrySet();
+
+		StringBuffer files = new StringBuffer();
+		StringBuffer fLocs = new StringBuffer("{");
+		for (Entry<String, List<Integer>> entry : entrySet) {
+			files.append(entry.getKey());
+			files.append(SEP);
+
+			List<Integer> value = entry.getValue();
+			StringBuffer locs = new StringBuffer(" {");
+			for (Integer val : value) {
+				locs.append(val);
+				locs.append(SEP);
+			}
+			int i = locs.lastIndexOf(SEP);
+			locs.replace(i, i + SEP.length(), "}");
+
+			fLocs.append(locs);
+			fLocs.append(SEP);
+		}
+
+		int i = files.lastIndexOf(SEP);
+		files.replace(i, i + SEP.length(), "");
+
+		i = fLocs.lastIndexOf(SEP);
+		fLocs.replace(i, i + SEP.length(), " }");
+
+		return new String[] { files.toString(), fLocs.toString() };
+	}
+
+	public void addLocation(File file, int lineNumber) {
+		List<Integer> list = fileLoc.get(file.getAbsolutePath());
+		if (list == null) {
+			list = new ArrayList<Integer>();
+			fileLoc.put(file.getAbsolutePath(), list);
+		}
+		list.add(lineNumber);
 	}
 
 	@Override
 	public String toString() {
-		return "BussinesRule [text=" + text + ", line=" + line + "]";
+		return "BusinessRule [text=" + text + "]";
 	}
+	
+	
 
 }

@@ -20,7 +20,8 @@ public class CategorizationEnumExtractor {
 			"The {0} of a {1} is by definition one of the following: {2}." };
 
 	public List<BusinessRule> extract(
-			HashMap<TypeDcl, List<TypeDeclaration>> subclasses) {
+			HashMap<TypeDcl, List<TypeDeclaration>> subclasses,
+			HashMap<String, JavaFileInfo> classesInfo) {
 		List<BusinessRule> rules = new ArrayList<BusinessRule>();
 
 		Set<Entry<TypeDcl, List<TypeDeclaration>>> entrySet = subclasses
@@ -34,7 +35,6 @@ public class CategorizationEnumExtractor {
 			}
 
 			List<TypeDeclaration> subClasses = entry.getValue();
-
 			if (subclasses.size() == 1) {
 				continue;
 			}
@@ -48,9 +48,14 @@ public class CategorizationEnumExtractor {
 
 			String brText = Utils.replaceTemplate(tmpl, values);
 
-			JavaFileInfo info = superClass.getFileInfo();
-			// CompilationUnit cu = info.getCompilUnit();
-			BusinessRule rule = new BusinessRule(brText, info.getFile(), 1);
+			BusinessRule rule = new BusinessRule(brText);
+			for (TypeDeclaration subClass : subClasses) {
+				JavaFileInfo info = classesInfo.get(subClass.resolveBinding()
+						.getQualifiedName());
+				rule.addLocation(info.getFile(), info.getCompilUnit()
+						.getLineNumber(subClass.getStartPosition()));
+			}
+
 			rules.add(rule);
 
 		}

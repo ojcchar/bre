@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
 import edu.utdallas.seers.bre.javabre.extractor.CategorizationEnumExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.RuleExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.SymbolicLiteralExtractor;
+import edu.utdallas.seers.bre.javabre.extractor.ValidValExtractor;
 import edu.utdallas.seers.bre.javabre.visitor.GeneralVisitor;
 
 public class RulesController {
@@ -32,11 +34,13 @@ public class RulesController {
 	private static Logger LOGGER = LoggerFactory
 			.getLogger(RulesController.class);
 	private HashMap<TypeDcl, List<TypeDeclaration>> subclasses = new HashMap<TypeDcl, List<TypeDeclaration>>();
+	private HashMap<String, JavaFileInfo> classesInfo = new HashMap<String, JavaFileInfo>();
 	private String[] sourceFolders;
 	private String[] classPaths;
-	private RulesWriter writer ;
+	private RulesWriter writer;
 
-	public RulesController(String[] sourceFolders, String[] classPaths, File outFile) throws IOException {
+	public RulesController(String[] sourceFolders, String[] classPaths,
+			File outFile) throws IOException {
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
 		this.writer = new RulesWriter(outFile);
@@ -54,7 +58,7 @@ public class RulesController {
 		}
 
 		CategorizationEnumExtractor ex = new CategorizationEnumExtractor();
-		List<BusinessRule> rules = ex.extract(subclasses);
+		List<BusinessRule> rules = ex.extract(subclasses, classesInfo);
 
 		writer.writeRules(rules);
 
@@ -115,6 +119,11 @@ public class RulesController {
 		RuleExtractor extractor = new SymbolicLiteralExtractor();
 		List<BusinessRule> rules = extractor.extract(fileInfo);
 		writer.writeRules(rules);
+
+		extractor = new ValidValExtractor();
+		List<BusinessRule> rules2 = extractor.extract(fileInfo);
+		// System.out.println(rules2);
+		writer.writeRules(rules2);
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -127,13 +136,18 @@ public class RulesController {
 			Type superclType = cl.getSuperclassType();
 			List<Type> superintTypes = cl.superInterfaceTypes();
 
+			ITypeBinding subClassBind = cl.resolveBinding();
+
+			classesInfo.put(subClassBind.getQualifiedName(), fileInfo);
+
 			// super class
 			if (superclType != null) {
 				String qualName = superclType.resolveBinding()
 						.getQualifiedName();
 
 				TypeDcl typeDcl = new TypeDcl(qualName,
-						TypeDcl.TypeDclType.CLASS, fileInfo, superclType.resolveBinding().getName());
+						TypeDcl.TypeDclType.CLASS, superclType.resolveBinding()
+								.getName());
 				List<TypeDeclaration> subCl = subclasses.get(typeDcl);
 				if (subCl == null) {
 					subCl = new ArrayList<TypeDeclaration>();
@@ -148,7 +162,8 @@ public class RulesController {
 					String qualName2 = type.resolveBinding().getQualifiedName();
 
 					TypeDcl typeDcl2 = new TypeDcl(qualName2,
-							TypeDcl.TypeDclType.INTERFACE, fileInfo, type.resolveBinding().getName());
+							TypeDcl.TypeDclType.INTERFACE, type
+									.resolveBinding().getName());
 					List<TypeDeclaration> subCl2 = subclasses.get(typeDcl2);
 					if (subCl2 == null) {
 						subCl2 = new ArrayList<TypeDeclaration>();
@@ -183,8 +198,8 @@ public class RulesController {
 		byte[] encoded = Files.readAllBytes(Paths.get(path.getAbsolutePath()));
 		return new String(encoded, Charset.defaultCharset()).toCharArray();
 	}
-	
-	public void close() throws IOException{
+
+	public void close() throws IOException {
 		writer.close();
 	}
 

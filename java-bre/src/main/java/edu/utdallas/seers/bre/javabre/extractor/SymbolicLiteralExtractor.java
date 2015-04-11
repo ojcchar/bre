@@ -33,7 +33,9 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 					term1, literal1 });
 
 			CompilationUnit cu = info.getCompilUnit();
-			BusinessRule rule = new BusinessRule(brText, info.getFile(),
+			BusinessRule rule = new BusinessRule(brText);
+			
+			rule.addLocation(info.getFile(),
 					cu.getLineNumber(constField.getStartPosition()));
 			rules.add(rule);
 
