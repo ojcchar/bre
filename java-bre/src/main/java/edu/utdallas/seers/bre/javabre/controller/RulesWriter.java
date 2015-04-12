@@ -9,14 +9,17 @@ import au.com.bytecode.opencsv.CSVWriter;
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 
 public class RulesWriter {
-//	private static Logger LOGGER = LoggerFactory.getLogger(RulesWriter.class);
+	// private static Logger LOGGER =
+	// LoggerFactory.getLogger(RulesWriter.class);
 
 	private static final char SEMI = ';';
 	private CSVWriter writer;
-	private final String[] header = { "Rule", "File", "Line Number" };
+	private final String[] header = { "Rule Type", "Rule", "File",
+			"Line Number" };
 
 	public RulesWriter(File file) throws IOException {
 		writer = new CSVWriter(new FileWriter(file), SEMI);
+		writer.writeNext(new String[] { "sep=" + SEMI });
 		writer.writeNext(header);
 	}
 

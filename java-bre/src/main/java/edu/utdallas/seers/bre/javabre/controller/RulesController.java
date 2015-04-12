@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -38,19 +39,23 @@ public class RulesController {
 	private String[] sourceFolders;
 	private String[] classPaths;
 	private RulesWriter writer;
+	private String[] encodings;
 
 	public RulesController(String[] sourceFolders, String[] classPaths,
 			File outFile) throws IOException {
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
 		this.writer = new RulesWriter(outFile);
+
+		encodings = new String[sourceFolders.length];
+		for (int i = 0; i < sourceFolders.length; i++) {
+			encodings[i] = "UTF-8";
+		}
 	}
 
 	public void processRules() throws Exception {
 
 		ASTParser parser = createParser();
-		parser.setEnvironment(classPaths, sourceFolders,
-				new String[] { "UTF-8" }, true);
 
 		for (String srcFolder : sourceFolders) {
 			File folder = new File(srcFolder);
@@ -88,8 +93,8 @@ public class RulesController {
 	private void processFile(ASTParser parser, File file) throws IOException {
 
 		if (!file.getName().endsWith(".java")) {
-			LOGGER.warn("The file " + file
-					+ " is not a java file, skipping it...");
+			// LOGGER.warn("The file " + file
+			// + " is not a java file, skipping it...");
 			return;
 		}
 
@@ -100,12 +105,18 @@ public class RulesController {
 		parser.setSource(fileContent);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
-		parser.setResolveBindings(true);
-		parser.setEnvironment(classPaths, sourceFolders,
-				new String[] { "UTF-8" }, true);
+		setParserConf(parser);
 
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
+		IProblem[] problems = cu.getProblems();
+
+		for (IProblem problem : problems) {
+			if (problem.isError()) {
+				LOGGER.debug(problem.toString() + " - "
+						+ problem.getSourceLineNumber());
+			}
+		}
 		// ---------------------
 
 		GeneralVisitor astVisitor = new GeneralVisitor();
@@ -180,18 +191,26 @@ public class RulesController {
 	private ASTParser createParser() {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 
+		setParserConf(parser);
+
+		return parser;
+	}
+
+	private void setParserConf(ASTParser parser) {
 		@SuppressWarnings("unchecked")
 		Map<String, String> options = JavaCore.getOptions();
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_6);
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-				JavaCore.VERSION_1_6);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_6);
+				JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
+		JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
 
 		parser.setBindingsRecovery(true);
 		parser.setStatementsRecovery(true);
 		parser.setCompilerOptions(options);
+		parser.setResolveBindings(true);
 
-		return parser;
+		parser.setEnvironment(classPaths, sourceFolders, encodings, true);
 	}
 
 	private char[] readFile(File path) throws IOException {

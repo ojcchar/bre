@@ -57,7 +57,8 @@ public class ValidValExtractor implements RuleExtractor {
 				}
 
 				String brText = Utils.replaceTemplate(templates[i], values);
-				BusinessRule rule = new BusinessRule(brText);
+				BusinessRule rule = new BusinessRule(brText,
+						BusinessRule.RuleType.VALID_VALUE);
 				rule.addLocation(info.getFile(), info.getCompilUnit()
 						.getLineNumber(ifStmt.getStartPosition()));
 				rules.add(rule);

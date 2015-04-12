@@ -31,7 +31,7 @@ public class GeneralVisitor extends ASTVisitor {
 		fileInfo.getClasses().add(node);
 		return super.visit(node);
 	}
-	
+
 	@Override
 	public boolean visit(IfStatement node) {
 		fileInfo.getIfStmts().add(node);

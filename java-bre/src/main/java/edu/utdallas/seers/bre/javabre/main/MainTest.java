@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -31,6 +32,14 @@ public class MainTest {
 
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
+		IProblem[] problems = cu.getProblems();
+
+		for (IProblem problem : problems) {
+			System.out.println(problem.toString() + " - "
+					+ problem.getSourceLineNumber());
+
+		}
+
 		TestVisitor astVisitor = new TestVisitor(cu);
 		cu.accept(astVisitor);
 
@@ -41,13 +50,21 @@ public class MainTest {
 		// parser.setEnvironment(classPaths, sourceFolders,
 		// new String[] { "UTF-8" }, true);
 
-		file = new File("test_data\\test_dummy\\org\\SubClass2.java");
+		file = new File("test_data\\test_dummy\\org\\SubClass1.java");
 		fileContent = readFile(file);
 		parser.setUnitName(file.getName());
 		parser.setSource(fileContent);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
 		cu = (CompilationUnit) parser.createAST(null);
+
+		problems = cu.getProblems();
+
+		for (IProblem problem : problems) {
+			System.out.println(problem.toString() + " - "
+					+ problem.getSourceLineNumber());
+
+		}
 
 		astVisitor = new TestVisitor(cu);
 		cu.accept(astVisitor);
@@ -70,10 +87,10 @@ public class MainTest {
 	private static void setConf(ASTParser parser) {
 		@SuppressWarnings("unchecked")
 		Map<String, String> options = JavaCore.getOptions();
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_6);
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-				JavaCore.VERSION_1_6);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_6);
+				JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
 
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);

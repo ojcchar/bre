@@ -12,9 +12,15 @@ public class BusinessRule {
 	private static final String SEP = "; ";
 	private String text;
 	private HashMap<String, List<Integer>> fileLoc;
+	private RuleType type;
 
-	public BusinessRule(String brText) {
+	public enum RuleType {
+		SYMBOL_LITERAL, CATEG_ENUMERATION, VALID_VALUE
+	}
+
+	public BusinessRule(String brText, RuleType type) {
 		text = brText;
+		this.setType(type);
 		fileLoc = new HashMap<String, List<Integer>>();
 	}
 
@@ -28,7 +34,7 @@ public class BusinessRule {
 
 	public String[] toStringArray() {
 		String[] locs = getFileLines();
-		return new String[] { text, locs[0], locs[1] };
+		return new String[] { type.toString(), text, locs[0], locs[1] };
 	}
 
 	/**
@@ -81,7 +87,13 @@ public class BusinessRule {
 	public String toString() {
 		return "BusinessRule [text=" + text + "]";
 	}
-	
-	
+
+	public RuleType getType() {
+		return type;
+	}
+
+	public void setType(RuleType type) {
+		this.type = type;
+	}
 
 }
