@@ -1,4 +1,4 @@
-package edu.utdallas.seers.bre.javabre.main;
+package edu.utdallas.seers.bre.javabre.main.test;
 
 import java.io.File;
 import java.io.IOException;

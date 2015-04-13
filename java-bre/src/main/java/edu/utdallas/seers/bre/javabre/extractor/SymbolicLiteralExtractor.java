@@ -30,13 +30,17 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 
 				String term1 = frag.getName().toString();
 
+				if ("serialVersionUID".equalsIgnoreCase(term1)) {
+					continue;
+				}
+
 				Expression initializer = frag.getInitializer();
 				if (initializer == null) {
 					continue;
 				}
-				
+
 				String simpleName = initializer.getClass().getSimpleName();
-				
+
 				if (!simpleName.toLowerCase().contains("literal")) {
 					continue;
 				}
@@ -47,7 +51,8 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 						term1, literal1 });
 
 				CompilationUnit cu = info.getCompilUnit();
-				BusinessRule rule = new BusinessRule(brText,BusinessRule.RuleType.SYMBOL_LITERAL);
+				BusinessRule rule = new BusinessRule(brText,
+						BusinessRule.RuleType.SYMBOL_LITERAL);
 
 				rule.addLocation(info.getFile(),
 						cu.getLineNumber(constField.getStartPosition()));

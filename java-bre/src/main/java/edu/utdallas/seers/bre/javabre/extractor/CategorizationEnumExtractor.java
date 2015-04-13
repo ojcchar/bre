@@ -48,7 +48,8 @@ public class CategorizationEnumExtractor {
 
 			String brText = Utils.replaceTemplate(tmpl, values);
 
-			BusinessRule rule = new BusinessRule(brText, BusinessRule.RuleType.CATEG_ENUMERATION);
+			BusinessRule rule = new BusinessRule(brText,
+					BusinessRule.RuleType.CATEG_ENUMERATION);
 			for (TypeDeclaration subClass : subClasses) {
 				JavaFileInfo info = classesInfo.get(subClass.resolveBinding()
 						.getQualifiedName());
