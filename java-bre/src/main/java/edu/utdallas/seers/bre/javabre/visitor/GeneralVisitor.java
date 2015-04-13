@@ -34,10 +34,10 @@ public class GeneralVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		
+
 		String className1 = node.getName().toString();
 
-		boolean contains = false;
+		boolean contains = businessTerms.isEmpty() ? true : false;
 		for (String term : businessTerms) {
 
 			if (!className1.toLowerCase().contains(term.toLowerCase())) {

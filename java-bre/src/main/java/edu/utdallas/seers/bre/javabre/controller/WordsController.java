@@ -54,7 +54,8 @@ public class WordsController {
 
 		// -----------------------
 
-		HashMap<String, HashMap<String, Integer>> identPatterns = astVisitor.getIdentPatterns();
+		HashMap<String, HashMap<String, Integer>> identPatterns = astVisitor
+				.getIdentPatterns();
 		writer.writePatterns(identPatterns);
 
 		// -----------------------

@@ -66,11 +66,11 @@ public class WordsWriter {
 
 	public WordsWriter(File outFilePatt, File outFileData) throws IOException {
 		writerPatt = new CSVWriter(new FileWriter(outFilePatt), SEMI);
-//		writerPatt.writeNext(new String[] { "sep=" + SEMI });
+		// writerPatt.writeNext(new String[] { "sep=" + SEMI });
 		writerPatt.writeNext(header1);
 
 		writerData = new CSVWriter(new FileWriter(outFileData), SEMI);
-//		writerData.writeNext(new String[] { "sep=" + SEMI });
+		// writerData.writeNext(new String[] { "sep=" + SEMI });
 		writerData.writeNext(header2);
 	}
 
@@ -109,8 +109,7 @@ public class WordsWriter {
 				for (WordCodeData wordCodeData : codeData) {
 					// { "POS Tag", "Lemma", "Frequency", "File",
 					// "Statement Type", "Line" };
-					writerData.writeNext(new String[] {
-							entry.getKey(),
+					writerData.writeNext(new String[] { entry.getKey(),
 							POS_TAGS.get(entry.getKey()),
 							entry2.getKey(),
 							// String.valueOf(entry2.getValue().getFreq()),

@@ -60,7 +60,6 @@ public class NLPProcessor {
 				// this is the POS tag of the token
 				String pos = token.get(PartOfSpeechAnnotation.class);
 				String lemma = token.get(LemmaAnnotation.class);
-				
 
 				tokens.add(new Token(word, pos, lemma));
 			}

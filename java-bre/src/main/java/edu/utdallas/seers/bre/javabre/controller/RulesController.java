@@ -127,7 +127,7 @@ public class RulesController {
 
 		for (IProblem problem : problems) {
 			if (problem.isError()) {
-				LOGGER.debug(problem.toString() + " - "
+				LOGGER.error(problem.toString() + " - "
 						+ problem.getSourceLineNumber());
 			}
 		}
