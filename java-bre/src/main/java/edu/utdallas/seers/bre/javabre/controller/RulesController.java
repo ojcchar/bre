@@ -1,6 +1,8 @@
 package edu.utdallas.seers.bre.javabre.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -40,16 +42,28 @@ public class RulesController {
 	private String[] classPaths;
 	private RulesWriter writer;
 	private String[] encodings;
+	private List<String> businessTerms;
 
 	public RulesController(String[] sourceFolders, String[] classPaths,
-			File outFile) throws IOException {
+			File outFile, File bussFile) throws IOException {
+		this.writer = new RulesWriter(outFile);
+		readBusinessTerms(bussFile);
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
-		this.writer = new RulesWriter(outFile);
 
 		encodings = new String[sourceFolders.length];
 		for (int i = 0; i < sourceFolders.length; i++) {
 			encodings[i] = "UTF-8";
+		}
+	}
+
+	private void readBusinessTerms(File bussFile) throws IOException {
+		businessTerms = new ArrayList<String>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(bussFile))) {
+			for (String line; (line = br.readLine()) != null;) {
+				businessTerms.add(line.trim());
+			}
 		}
 	}
 
@@ -119,7 +133,7 @@ public class RulesController {
 		}
 		// ---------------------
 
-		GeneralVisitor astVisitor = new GeneralVisitor();
+		GeneralVisitor astVisitor = new GeneralVisitor(businessTerms);
 		cu.accept(astVisitor);
 		JavaFileInfo fileInfo = astVisitor.getFileInfo();
 		fileInfo.setFile(file);

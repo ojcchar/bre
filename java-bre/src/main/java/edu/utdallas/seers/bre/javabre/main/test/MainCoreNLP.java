@@ -13,6 +13,8 @@ import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
 import edu.stanford.nlp.util.CoreMap;
@@ -23,13 +25,13 @@ public class MainCoreNLP {
 		// creates a StanfordCoreNLP object, with POS tagging, lemmatization,
 		// NER, parsing, and coreference resolution
 		Properties props = new Properties();
-		// props.setProperty("annotators",
-		// "tokenize, ssplit, pos, lemma, ner, parse, dcoref");
-		props.setProperty("annotators", "tokenize, ssplit, pos, lemma, parse");
+		 props.setProperty("annotators",
+		 "tokenize, ssplit, pos, lemma, ner, parse, dcoref");
+//		props.setProperty("annotators", "tokenize, ssplit, pos, lemma, parse");
 		StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
 		// read some text in the text variable
-		String text = "HELLO,_i_am"; // Add your
+		String text = "JabRef is an open source bibliography reference manager. The native file format used by JabRef is BibTeX, the standard LaTeX bibliography format. "; // Add your
 										// text
 										// here!
 
@@ -54,7 +56,8 @@ public class MainCoreNLP {
 
 	private static void processText(StanfordCoreNLP pipeline, String text) {
 		// create an empty Annotation just with the given text
-		Annotation document = new Annotation(splitCamelCase(text));
+//		Annotation document = new Annotation(splitCamelCase(text));
+		Annotation document = new Annotation(text);
 
 		// run all Annotators on this text
 		pipeline.annotate(document);
@@ -82,11 +85,11 @@ public class MainCoreNLP {
 			System.out.println("tree");
 			System.out.println(tree);
 
-			// this is the Stanford dependency graph of the current sentence
-			// SemanticGraph dependencies = sentence
-			// .get(CollapsedCCProcessedDependenciesAnnotation.class);
-			// System.out.println("deps");
-			// System.out.println(dependencies);
+//			 this is the Stanford dependency graph of the current sentence
+			 SemanticGraph dependencies = sentence
+			 .get(CollapsedCCProcessedDependenciesAnnotation.class);
+			 System.out.println("deps");
+			 System.out.println(dependencies);
 		}
 	}
 

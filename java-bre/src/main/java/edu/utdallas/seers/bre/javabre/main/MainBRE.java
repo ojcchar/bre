@@ -17,6 +17,7 @@ public class MainBRE {
 	private static String[] sourceFolders;
 	private static String[] classPaths;
 	private static File outFile;
+	private static File bussFile;
 
 	public static void main(String args[]) {
 
@@ -25,7 +26,7 @@ public class MainBRE {
 			parseArguments(args);
 
 			rulesController = new RulesController(sourceFolders, classPaths,
-					outFile);
+					outFile, bussFile);
 			rulesController.processRules();
 
 		} catch (Exception e) {
@@ -46,14 +47,15 @@ public class MainBRE {
 	}
 
 	private static void parseArguments(String[] args) throws Exception {
-		if (args.length != 3) {
+		if (args.length != 4) {
 			throw new Exception(
-					"Arguments must be 3: [source_folders] [classpaths] [out_csv_file]");
+					"Arguments must be 4: [source_folders] [classpaths] [file_business_words] [out_csv_file]");
 		}
 
 		sourceFolders = args[0].split(",");
 		classPaths = args[1].split(",");
-		outFile = new File(args[2]);
+		bussFile = new File(args[2]);
+		outFile = new File(args[3]);
 	}
 
 }

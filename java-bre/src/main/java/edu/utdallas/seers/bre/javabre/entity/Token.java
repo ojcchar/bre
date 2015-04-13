@@ -36,4 +36,10 @@ public class Token {
 		this.lemma = lemma;
 	}
 
+	@Override
+	public String toString() {
+		return "Token [word=" + word + ", pos=" + pos + ", lemma=" + lemma
+				+ "]";
+	}
+
 }

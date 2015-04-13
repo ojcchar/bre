@@ -54,7 +54,7 @@ public class WordsController {
 
 		// -----------------------
 
-		HashMap<String, Integer> identPatterns = astVisitor.getIdentPatterns();
+		HashMap<String, HashMap<String, Integer>> identPatterns = astVisitor.getIdentPatterns();
 		writer.writePatterns(identPatterns);
 
 		// -----------------------
@@ -108,7 +108,7 @@ public class WordsController {
 
 		for (IProblem problem : problems) {
 			if (problem.isError()) {
-				LOGGER.debug(problem.toString() + " - "
+				LOGGER.error(problem.toString() + " - "
 						+ problem.getSourceLineNumber());
 			}
 		}

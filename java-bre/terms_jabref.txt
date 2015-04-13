@@ -1,0 +1,10 @@
+bibliography
+reference
+manager
+latex
+format
+JabRef
+source
+file
+jabref
+BibTeX
