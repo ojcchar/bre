@@ -48,7 +48,7 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 				String literal1 = initializer.toString();
 
 				String brText = Utils.replaceTemplate(template, new String[] {
-						term1, literal1 });
+						Utils.bracketizeStr(term1), literal1 });
 
 				CompilationUnit cu = info.getCompilUnit();
 				BusinessRule rule = new BusinessRule(brText,

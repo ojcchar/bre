@@ -43,17 +43,18 @@ public class ValidValExtractor implements RuleExtractor {
 				int i = 0;
 				MaxMin value = entry.getValue();
 				String[] values = null;
+				String term0 = entry.getKey();
+				String nlTerm = Utils.bracketizeStr(term0);
 				if (value.min == null || value.max == null) {
 					if (value.max == null) {
 						i = 1;
-						values = new String[] { entry.getKey(), value.min };
+						values = new String[] { nlTerm, value.min };
 					} else {
 						i = 2;
-						values = new String[] { entry.getKey(), value.max };
+						values = new String[] { nlTerm, value.max };
 					}
 				} else {
-					values = new String[] { entry.getKey(), value.min,
-							value.max };
+					values = new String[] { nlTerm, value.min, value.max };
 				}
 
 				String brText = Utils.replaceTemplate(templates[i], values);

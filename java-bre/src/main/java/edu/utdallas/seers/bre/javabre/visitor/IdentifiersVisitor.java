@@ -15,6 +15,7 @@ import edu.utdallas.seers.bre.javabre.controller.NLPProcessor;
 import edu.utdallas.seers.bre.javabre.entity.Token;
 import edu.utdallas.seers.bre.javabre.entity.WordCodeData;
 import edu.utdallas.seers.bre.javabre.entity.WordData;
+import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class IdentifiersVisitor extends ASTVisitor {
 
@@ -106,11 +107,12 @@ public class IdentifiersVisitor extends ASTVisitor {
 
 	// pos -> [ lemma -> freq,statement ]
 	private HashMap<String, HashMap<String, WordData>> data;
-	private HashMap<String, HashMap<String, Integer>> identPatterns;
+	// statement -> [ pos -> List<strings>]
+	private HashMap<String, HashMap<String, List<String>>> identPatterns;
 
 	public IdentifiersVisitor() {
 		data = new HashMap<String, HashMap<String, WordData>>();
-		identPatterns = new HashMap<String, HashMap<String, Integer>>();
+		identPatterns = new HashMap<String, HashMap<String, List<String>>>();
 	}
 
 	@Override
@@ -133,23 +135,25 @@ public class IdentifiersVisitor extends ASTVisitor {
 
 		String parentType = node.getParent().getClass().getSimpleName();
 
-		HashMap<String, Integer> hashMap = identPatterns.get(parentType);
+		HashMap<String, List<String>> hashMap = identPatterns.get(parentType);
 		if (hashMap == null) {
-			hashMap = new HashMap<String, Integer>();
+			hashMap = new HashMap<String, List<String>>();
 			identPatterns.put(parentType, hashMap);
 		}
 
-		String patt = getIdentPattern(tokens);
-		if (patt == null) {
+		String posPatt = getIdentPattern(tokens);
+		if (posPatt == null) {
 			return;
 		}
 
-		Integer freq = hashMap.get(patt);
-		if (freq == null) {
-			freq = 0;
+		String nlPatt = Utils.getNLTokens(tokens);
+
+		List<String> nlPatts = hashMap.get(posPatt);
+		if (nlPatts == null) {
+			nlPatts = new ArrayList<String>();
+			hashMap.put(posPatt, nlPatts);
 		}
-		++freq;
-		hashMap.put(patt, freq);
+		nlPatts.add(nlPatt);
 	}
 
 	private String getIdentPattern(List<Token> tokens) {
@@ -207,7 +211,7 @@ public class IdentifiersVisitor extends ASTVisitor {
 		return data;
 	}
 
-	public HashMap<String, HashMap<String, Integer>> getIdentPatterns() {
+	public HashMap<String, HashMap<String, List<String>>> getIdentPatterns() {
 		return identPatterns;
 	}
 

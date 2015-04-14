@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.core.JavaCore;
@@ -54,7 +55,7 @@ public class WordsController {
 
 		// -----------------------
 
-		HashMap<String, HashMap<String, Integer>> identPatterns = astVisitor
+		HashMap<String, HashMap<String, List<String>>> identPatterns = astVisitor
 				.getIdentPatterns();
 		writer.writePatterns(identPatterns);
 

@@ -18,6 +18,27 @@ public class Utils {
 		return replacedText;
 	}
 
+	public static String bracketizeStr(String txt) {
+		return "[" + getNLText(txt) + "]";
+	}
+
+	public static String getNLText(String txt) {
+
+		List<Token> tokensTerm = NLPProcessor.getInstance().processText(txt);
+
+		return getNLTokens(tokensTerm);
+	}
+
+	public static String getNLTokens(List<Token> tokensTerm) {
+		StringBuffer buf = new StringBuffer();
+		for (Token token : tokensTerm) {
+			buf.append(token.getWord().toLowerCase());
+			buf.append(" ");
+		}
+
+		return buf.toString().trim();
+	}
+
 	public static boolean shareBusinessTerms(String termToMatch,
 			List<String> businessTerms) {
 		boolean contains = businessTerms.isEmpty() ? true : false;

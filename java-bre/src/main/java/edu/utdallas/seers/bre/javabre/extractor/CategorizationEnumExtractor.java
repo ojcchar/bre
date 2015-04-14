@@ -68,12 +68,13 @@ public class CategorizationEnumExtractor {
 	private String[] getValues(TypeDcl superClass,
 			List<TypeDeclaration> subClasses) {
 
-		String term0 = superClass.getName();
+		String term0 = Utils.bracketizeStr(superClass.getName());
 
 		if (subClasses.size() == 2) {
-			return new String[] { term0,
-					subClasses.get(0).getName().toString(),
-					subClasses.get(1).getName().toString() };
+			return new String[] {
+					term0,
+					Utils.bracketizeStr(subClasses.get(0).getName().toString()),
+					Utils.bracketizeStr(subClasses.get(1).getName().toString()) };
 		}
 
 		final String COMMA = ", ";
@@ -81,7 +82,7 @@ public class CategorizationEnumExtractor {
 		for (TypeDeclaration tDcl : subClasses) {
 			SimpleName clName = tDcl.getName();
 
-			buf.append(clName.toString());
+			buf.append(Utils.bracketizeStr(clName.toString()));
 			buf.append(COMMA);
 		}
 

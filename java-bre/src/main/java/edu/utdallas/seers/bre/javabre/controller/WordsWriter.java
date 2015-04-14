@@ -16,7 +16,8 @@ public class WordsWriter {
 
 	private static final char SEMI = ';';
 	private CSVWriter writerPatt;
-	private final String[] header1 = { "Statement Type", "Pattern", "Frequency" };
+	private final String[] header1 = { "Statement Type", "POS Pattern",
+			"NL Pattern" };
 
 	private CSVWriter writerData;
 	private final String[] header2 = { "POS Tag", "POS Tag Desc", "Lemma",
@@ -75,18 +76,23 @@ public class WordsWriter {
 	}
 
 	public void writePatterns(
-			HashMap<String, HashMap<String, Integer>> identPatterns) {
+			HashMap<String, HashMap<String, List<String>>> identPatterns) {
 
-		Set<Entry<String, HashMap<String, Integer>>> entrySet = identPatterns
+		Set<Entry<String, HashMap<String, List<String>>>> entrySet = identPatterns
 				.entrySet();
-		for (Entry<String, HashMap<String, Integer>> entry : entrySet) {
+		for (Entry<String, HashMap<String, List<String>>> entry : entrySet) {
 
-			Set<Entry<String, Integer>> entrySet2 = entry.getValue().entrySet();
+			Set<Entry<String, List<String>>> entrySet2 = entry.getValue()
+					.entrySet();
 
-			for (Entry<String, Integer> entry2 : entrySet2) {
+			for (Entry<String, List<String>> entry2 : entrySet2) {
 
-				writerPatt.writeNext(new String[] { entry.getKey(),
-						entry2.getKey(), entry2.getValue().toString() });
+				List<String> patterns = entry2.getValue();
+
+				for (String patt : patterns) {
+					writerPatt.writeNext(new String[] { entry.getKey(),
+							entry2.getKey(), patt });
+				}
 			}
 
 		}
