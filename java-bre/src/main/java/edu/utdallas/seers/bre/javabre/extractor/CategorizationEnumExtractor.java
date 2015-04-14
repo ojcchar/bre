@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
@@ -67,8 +68,10 @@ public class CategorizationEnumExtractor {
 	private String[] getValues(TypeDcl superClass,
 			List<TypeDeclaration> subClasses) {
 
+		String term0 = superClass.getName();
+
 		if (subClasses.size() == 2) {
-			return new String[] { superClass.getName(),
+			return new String[] { term0,
 					subClasses.get(0).getName().toString(),
 					subClasses.get(1).getName().toString() };
 		}
@@ -76,7 +79,9 @@ public class CategorizationEnumExtractor {
 		final String COMMA = ", ";
 		StringBuffer buf = new StringBuffer();
 		for (TypeDeclaration tDcl : subClasses) {
-			buf.append(tDcl.getName().toString());
+			SimpleName clName = tDcl.getName();
+
+			buf.append(clName.toString());
 			buf.append(COMMA);
 		}
 
@@ -86,6 +91,6 @@ public class CategorizationEnumExtractor {
 		lastIndexOf = buf.lastIndexOf(COMMA);
 		buf.replace(lastIndexOf, lastIndexOf + COMMA.length(), " or ");
 
-		return new String[] { superClass.getName(), buf.toString() };
+		return new String[] { term0, buf.toString() };
 	}
 }

@@ -8,9 +8,8 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import edu.utdallas.seers.bre.javabre.controller.NLPProcessor;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
-import edu.utdallas.seers.bre.javabre.entity.Token;
+import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class GeneralVisitor extends ASTVisitor {
 
@@ -37,38 +36,9 @@ public class GeneralVisitor extends ASTVisitor {
 
 		String className1 = node.getName().toString();
 
-		boolean contains = businessTerms.isEmpty() ? true : false;
-		for (String term : businessTerms) {
+		boolean share = Utils.shareBusinessTerms(className1, businessTerms);
 
-			if (!className1.toLowerCase().contains(term.toLowerCase())) {
-				List<Token> tokensCl = NLPProcessor.getInstance().processText(
-						className1);
-
-				List<Token> tokensTerm = NLPProcessor.getInstance()
-						.processText(term);
-
-				for (Token tokenCl : tokensCl) {
-
-					for (Token tokenTerm : tokensTerm) {
-						if (tokenCl.getLemma().equals(tokenTerm.getLemma())) {
-							contains = true;
-							break;
-						}
-					}
-
-					if (contains) {
-						break;
-					}
-
-				}
-
-			} else {
-				contains = true;
-			}
-
-		}
-
-		if (!contains) {
+		if (!share) {
 			return false;
 		}
 
