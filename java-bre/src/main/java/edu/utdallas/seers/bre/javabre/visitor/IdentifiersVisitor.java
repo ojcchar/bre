@@ -120,8 +120,8 @@ public class IdentifiersVisitor extends ASTVisitor {
 		String identifier = node.toString();
 		int parentType = node.getParent().getNodeType();
 
-		if (!JAVA_KEYWORDS.contains(identifier)
-				&& NODE_TYPES.contains(parentType)) {
+		if (!JAVA_KEYWORDS.contains(identifier.toLowerCase())
+				&& NODE_TYPES.contains(parentType) && identifier.length() > 2) {
 			List<Token> tokens = NLPProcessor.getInstance().processText(
 					identifier);
 			updateData(tokens, node);
