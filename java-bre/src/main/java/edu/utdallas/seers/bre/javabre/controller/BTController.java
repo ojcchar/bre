@@ -1,13 +1,17 @@
 package edu.utdallas.seers.bre.javabre.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
@@ -17,35 +21,41 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.utdallas.seers.bre.javabre.controller.writer.WordsWriter;
-import edu.utdallas.seers.bre.javabre.entity.words.WordData;
-import edu.utdallas.seers.bre.javabre.visitor.IdentifiersVisitor;
+import edu.utdallas.seers.bre.javabre.controller.writer.BTWriter;
+import edu.utdallas.seers.bre.javabre.entity.words.Token;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.BusTerm;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.VarBT;
+import edu.utdallas.seers.bre.javabre.visitor.VariablesVisitor;
 
-public class WordsController {
+public class BTController {
 
-	private static Logger LOGGER = LoggerFactory
-			.getLogger(WordsController.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(BTController.class);
 	private String[] sourceFolders;
 	private String[] classPaths;
 	private String[] encodings;
-	private IdentifiersVisitor astVisitor;
-	private WordsWriter writer;
+	private VariablesVisitor astVisitor;
+	private BTWriter writer;
+	private File inBtFile;
 
-	public WordsController(String[] sourceFolders, String[] classPaths,
-			File outFilePatt, File outFileData) throws IOException {
+	public BTController(String[] sourceFolders, String[] classPaths,
+			File inBtFile, File outFile) throws IOException {
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
+		this.inBtFile = inBtFile;
 
 		encodings = new String[sourceFolders.length];
 		for (int i = 0; i < sourceFolders.length; i++) {
 			encodings[i] = "UTF-8";
 		}
 
-		astVisitor = new IdentifiersVisitor();
-		this.writer = new WordsWriter(outFilePatt, outFileData);
+		astVisitor = new VariablesVisitor();
+		this.writer = new BTWriter(outFile);
 	}
 
 	public void processRules() throws Exception {
+
+		Set<BusTerm> bTerms = readBTerms();
+		astVisitor.setbTerms(bTerms);
 
 		ASTParser parser = createParser();
 
@@ -56,15 +66,27 @@ public class WordsController {
 
 		// -----------------------
 
-		HashMap<String, HashMap<String, List<String>>> identPatterns = astVisitor
-				.getIdentPatterns();
-		writer.writePatterns(identPatterns);
+		HashMap<BusTerm, HashMap<String, List<VarBT>>> matches = astVisitor
+				.getBtMatches();
+		writer.writeBtMatches(matches);
 
-		// -----------------------
+	}
 
-		HashMap<String, HashMap<String, WordData>> data = astVisitor.getData();
-		writer.writeData(data);
+	private Set<BusTerm> readBTerms() throws IOException {
 
+		Set<BusTerm> terms = new HashSet<BusTerm>();
+
+		int id = 0;
+		try (BufferedReader br = new BufferedReader(new FileReader(inBtFile))) {
+			for (String line; (line = br.readLine()) != null;) {
+
+				List<Token> tokens = NLPProcessor.getInstance().processText(
+						line, false);
+				terms.add(new BusTerm(id++, tokens));
+			}
+		}
+		
+		return terms;
 	}
 
 	private void processFolder(ASTParser parser, File folder)

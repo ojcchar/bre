@@ -3,7 +3,7 @@ package edu.utdallas.seers.bre.javabre.util;
 import java.util.List;
 
 import edu.utdallas.seers.bre.javabre.controller.NLPProcessor;
-import edu.utdallas.seers.bre.javabre.entity.Token;
+import edu.utdallas.seers.bre.javabre.entity.words.Token;
 
 public class Utils {
 
@@ -24,7 +24,7 @@ public class Utils {
 
 	public static String getNLText(String txt) {
 
-		List<Token> tokensTerm = NLPProcessor.getInstance().processText(txt);
+		List<Token> tokensTerm = NLPProcessor.getInstance().processText(txt, true);
 
 		return getNLTokens(tokensTerm);
 	}
@@ -46,10 +46,10 @@ public class Utils {
 
 			if (!termToMatch.toLowerCase().contains(term.toLowerCase())) {
 				List<Token> tokensCl = NLPProcessor.getInstance().processText(
-						termToMatch);
+						termToMatch, true);
 
 				List<Token> tokensTerm = NLPProcessor.getInstance()
-						.processText(term);
+						.processText(term, true);
 
 				for (Token tokenCl : tokensCl) {
 

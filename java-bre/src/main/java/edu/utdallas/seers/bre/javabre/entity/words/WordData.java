@@ -1,4 +1,4 @@
-package edu.utdallas.seers.bre.javabre.entity;
+package edu.utdallas.seers.bre.javabre.entity.words;
 
 import java.util.ArrayList;
 import java.util.List;

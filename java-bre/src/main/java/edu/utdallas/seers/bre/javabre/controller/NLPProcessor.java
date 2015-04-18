@@ -15,7 +15,7 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
-import edu.utdallas.seers.bre.javabre.entity.Token;
+import edu.utdallas.seers.bre.javabre.entity.words.Token;
 
 public class NLPProcessor {
 
@@ -37,9 +37,9 @@ public class NLPProcessor {
 		return instance;
 	}
 
-	public List<Token> processText(String text) {
+	public List<Token> processText(String text, boolean isIdent) {
 		// create an empty Annotation just with the given text
-		Annotation document = new Annotation(splitCamelCase(text));
+		Annotation document = new Annotation(isIdent ? splitCamelCase(text) : text);
 
 		// run all Annotators on this text
 		pipeline.annotate(document);
@@ -74,7 +74,8 @@ public class NLPProcessor {
 	}
 
 	static String splitCamelCase(String s) {
-
+		
+		//FIXME: sometimes underscore and camel case are mixed
 		if (s.contains("_")) {
 			s = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, s);
 		}

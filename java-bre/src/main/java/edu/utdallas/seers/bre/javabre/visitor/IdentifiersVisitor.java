@@ -12,14 +12,14 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.SimpleName;
 
 import edu.utdallas.seers.bre.javabre.controller.NLPProcessor;
-import edu.utdallas.seers.bre.javabre.entity.Token;
-import edu.utdallas.seers.bre.javabre.entity.WordCodeData;
-import edu.utdallas.seers.bre.javabre.entity.WordData;
+import edu.utdallas.seers.bre.javabre.entity.words.Token;
+import edu.utdallas.seers.bre.javabre.entity.words.WordCodeData;
+import edu.utdallas.seers.bre.javabre.entity.words.WordData;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class IdentifiersVisitor extends ASTVisitor {
 
-	private final static List<String> JAVA_KEYWORDS = Arrays
+	final static List<String> JAVA_KEYWORDS = Arrays
 			.asList(new String[] { "abstract", "continue", "for", "new",
 					"switch", "assert", "default", "package", "synchronized",
 					"boolean", "do", "if", "private", "this", "break",
@@ -37,7 +37,7 @@ public class IdentifiersVisitor extends ASTVisitor {
 					ASTNode.TYPE_DECLARATION, ASTNode.ENUM_DECLARATION,
 					ASTNode.ENUM_CONSTANT_DECLARATION });
 
-	private final static List<String> STOP_WORDS = Arrays.asList(new String[] {
+	final static List<String> STOP_WORDS = Arrays.asList(new String[] {
 			"a", "about", "above", "according", "across", "after",
 			"afterwards", "again", "against", "albeit", "all", "almost",
 			"alone", "along", "already", "also", "although", "always", "am",
@@ -123,7 +123,7 @@ public class IdentifiersVisitor extends ASTVisitor {
 		if (!JAVA_KEYWORDS.contains(identifier.toLowerCase())
 				&& NODE_TYPES.contains(parentType) && identifier.length() > 2) {
 			List<Token> tokens = NLPProcessor.getInstance().processText(
-					identifier);
+					identifier, true);
 			updateData(tokens, node);
 			updateTokens(tokens, node);
 		}

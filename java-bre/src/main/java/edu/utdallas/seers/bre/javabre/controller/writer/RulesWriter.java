@@ -1,4 +1,4 @@
-package edu.utdallas.seers.bre.javabre.controller;
+package edu.utdallas.seers.bre.javabre.controller.writer;
 
 import java.io.File;
 import java.io.FileWriter;

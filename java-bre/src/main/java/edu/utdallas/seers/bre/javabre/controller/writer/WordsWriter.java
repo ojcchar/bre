@@ -1,4 +1,4 @@
-package edu.utdallas.seers.bre.javabre.controller;
+package edu.utdallas.seers.bre.javabre.controller.writer;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import edu.utdallas.seers.bre.javabre.entity.WordCodeData;
-import edu.utdallas.seers.bre.javabre.entity.WordData;
+import edu.utdallas.seers.bre.javabre.entity.words.WordCodeData;
+import edu.utdallas.seers.bre.javabre.entity.words.WordData;
 
 public class WordsWriter {
 
