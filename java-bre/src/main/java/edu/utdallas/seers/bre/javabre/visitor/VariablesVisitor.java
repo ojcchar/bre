@@ -91,7 +91,7 @@ public class VariablesVisitor extends ASTVisitor {
 	private boolean contains(BusTerm bTerm, List<Token> tokens) {
 		List<Token> tokens2 = bTerm.getTokens();
 		for (Token tokenBt : tokens2) {
-			for (Token token : tokens2) {
+			for (Token token : tokens) {
 				if (tokenBt.getLemma().equalsIgnoreCase(token.getLemma())) {
 					return true;
 				}
