@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -86,11 +87,26 @@ public class BTController {
 
 				List<Token> tokens = NLPProcessor.getInstance().processText(
 						line, false);
-				terms.add(new BusTerm(id++, tokens));
+				if (hasNouns(tokens)) {
+					terms.add(new BusTerm(id++, tokens));
+				}
 			}
 		}
 
 		return terms;
+	}
+
+	private static final List<String> NOUNS = Arrays.asList(new String[] {
+			"NN", "NNS", "NNP", "NNPS" });
+
+	private boolean hasNouns(List<Token> tokens) {
+
+		for (Token token : tokens) {
+			if (NOUNS.contains(token.getPos())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void processFolder(ASTParser parser, File folder)
