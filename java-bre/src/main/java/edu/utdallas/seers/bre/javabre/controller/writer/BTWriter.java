@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -17,8 +16,7 @@ public class BTWriter {
 
 	private static final char SEMI = ';';
 	private CSVWriter writerPatt;
-	private final String[] header1 = { "Business Term", "File", "Variable",
-			"Line" };
+	private final String[] header1 = { "Business Term", "File", "Variable" };
 
 	private static HashMap<String, String> POS_TAGS = new HashMap<String, String>();
 	static {
@@ -73,19 +71,18 @@ public class BTWriter {
 	}
 
 	public void writeBtMatches(
-			HashMap<BusTerm, HashMap<String, List<VarBT>>> matches) {
-		Set<Entry<BusTerm, HashMap<String, List<VarBT>>>> entrySet = matches
+			HashMap<BusTerm, HashMap<String, Set<VarBT>>> matches) {
+		Set<Entry<BusTerm, HashMap<String, Set<VarBT>>>> entrySet = matches
 				.entrySet();
-		for (Entry<BusTerm, HashMap<String, List<VarBT>>> entry : entrySet) {
-			Set<Entry<String, List<VarBT>>> entrySet2 = entry.getValue()
+		for (Entry<BusTerm, HashMap<String, Set<VarBT>>> entry : entrySet) {
+			Set<Entry<String, Set<VarBT>>> entrySet2 = entry.getValue()
 					.entrySet();
-			for (Entry<String, List<VarBT>> entry2 : entrySet2) {
-				List<VarBT> value = entry2.getValue();
+			for (Entry<String, Set<VarBT>> entry2 : entrySet2) {
+				Set<VarBT> value = entry2.getValue();
 				for (VarBT varBT : value) {
 					writerPatt.writeNext(new String[] {
 							Token.getOrigStr(entry.getKey().getTokens()),
-							entry2.getKey(), varBT.getOrigVar(),
-							String.valueOf(varBT.getLine()) });
+							entry2.getKey(), varBT.getOrigVar() });
 				}
 			}
 		}

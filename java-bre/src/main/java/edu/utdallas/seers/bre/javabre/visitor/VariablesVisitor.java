@@ -1,9 +1,9 @@
 package edu.utdallas.seers.bre.javabre.visitor;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,10 +28,10 @@ public class VariablesVisitor extends ASTVisitor {
 	private Set<BusTerm> bTerms;
 
 	// pos -> [ lemma -> freq,statement ]
-	private HashMap<BusTerm, HashMap<String, List<VarBT>>> btMatches;
+	private HashMap<BusTerm, HashMap<String, Set<VarBT>>> btMatches;
 
 	public VariablesVisitor() {
-		setBtMatches(new HashMap<BusTerm, HashMap<String, List<VarBT>>>());
+		setBtMatches(new HashMap<BusTerm, HashMap<String, Set<VarBT>>>());
 	}
 
 	@Override
@@ -60,23 +60,39 @@ public class VariablesVisitor extends ASTVisitor {
 				continue;
 			}
 
-			HashMap<String, List<VarBT>> map = this.getBtMatches().get(bTerm);
+			HashMap<String, Set<VarBT>> map = this.getBtMatches().get(bTerm);
 
 			if (map == null) {
-				map = new HashMap<String, List<VarBT>>();
+				map = new HashMap<String, Set<VarBT>>();
 				getBtMatches().put(bTerm, map);
 			}
-			List<VarBT> list = map.get(file.getAbsolutePath());
+			Set<VarBT> list = map.get(file.getAbsolutePath());
 			if (list == null) {
-				list = new ArrayList<VarBT>();
+				list = new HashSet<VarBT>();
 				map.put(file.getAbsolutePath(), list);
 			}
-			list.add(new VarBT(tokens,
-					cu.getLineNumber(node.getStartPosition()), identifier));
+			list.add(new VarBT(tokens, identifier));
 
 		}
 
 	}
+
+	// private boolean contains(BusTerm bTerm, List<Token> tokens) {
+	// List<Token> tokens2 = bTerm.getTokens();
+	//
+	// if (tokens2.size() != tokens.size()) {
+	// return false;
+	// }
+	//
+	// for (int i = 0; i < tokens2.size(); i++) {
+	// if (!tokens2.get(i).getLemma()
+	// .equalsIgnoreCase(tokens.get(i).getLemma())) {
+	// return false;
+	// }
+	// }
+	//
+	// return true;
+	// }
 
 	private boolean contains(BusTerm bTerm, List<Token> tokens) {
 		List<Token> tokens2 = bTerm.getTokens();
@@ -114,12 +130,12 @@ public class VariablesVisitor extends ASTVisitor {
 		this.bTerms = bTerms;
 	}
 
-	public HashMap<BusTerm, HashMap<String, List<VarBT>>> getBtMatches() {
+	public HashMap<BusTerm, HashMap<String, Set<VarBT>>> getBtMatches() {
 		return btMatches;
 	}
 
 	public void setBtMatches(
-			HashMap<BusTerm, HashMap<String, List<VarBT>>> btMatches) {
+			HashMap<BusTerm, HashMap<String, Set<VarBT>>> btMatches) {
 		this.btMatches = btMatches;
 	}
 

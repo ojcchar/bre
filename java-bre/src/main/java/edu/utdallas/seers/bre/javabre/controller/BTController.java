@@ -70,7 +70,7 @@ public class BTController {
 
 		// -----------------------
 
-		HashMap<BusTerm, HashMap<String, List<VarBT>>> matches = astVisitor
+		HashMap<BusTerm, HashMap<String, Set<VarBT>>> matches = astVisitor
 				.getBtMatches();
 		writer.writeBtMatches(matches);
 

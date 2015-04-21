@@ -8,11 +8,9 @@ public class VarBT {
 
 	private String origVar;
 	private List<Token> tokens;
-	private int line;
 
-	public VarBT(List<Token> tokens2, int lineNumber, String origVar) {
+	public VarBT(List<Token> tokens2, String origVar) {
 		this.tokens = tokens2;
-		this.line = lineNumber;
 		this.origVar = origVar;
 	}
 
@@ -24,20 +22,37 @@ public class VarBT {
 		this.tokens = tokens;
 	}
 
-	public int getLine() {
-		return line;
-	}
-
-	public void setLine(int line) {
-		this.line = line;
-	}
-
 	public String getOrigVar() {
 		return origVar;
 	}
 
 	public void setOrigVar(String origVar) {
 		this.origVar = origVar;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((origVar == null) ? 0 : origVar.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		VarBT other = (VarBT) obj;
+		if (origVar == null) {
+			if (other.origVar != null)
+				return false;
+		} else if (!origVar.equals(other.origVar))
+			return false;
+		return true;
 	}
 
 }
