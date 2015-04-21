@@ -26,6 +26,10 @@ public class SubClass1 extends SuperClass implements SuperInterface {
 		} else {
 			return;
 		}
+		
+		if (attrOne == null) {
+			System.out.println("attrOne is null");
+		}
 
 		int[] array = new int[100];
 
