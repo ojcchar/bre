@@ -36,12 +36,15 @@ public class BTController {
 	private VariablesVisitor astVisitor;
 	private BTWriter writer;
 	private File inBtFile;
+	private String[] processFolders;
 
 	public BTController(String[] sourceFolders, String[] classPaths,
-			File inBtFile, File outFile) throws IOException {
+			File inBtFile, File outFile, String[] processFolders)
+			throws IOException {
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
 		this.inBtFile = inBtFile;
+		this.processFolders = processFolders;
 
 		encodings = new String[sourceFolders.length];
 		for (int i = 0; i < sourceFolders.length; i++) {
@@ -57,9 +60,10 @@ public class BTController {
 		Set<BusTerm> bTerms = readBTerms();
 		astVisitor.setbTerms(bTerms);
 
-		ASTParser parser = createParser();
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		setParserConf(parser);
 
-		for (String srcFolder : sourceFolders) {
+		for (String srcFolder : processFolders) {
 			File folder = new File(srcFolder);
 			processFolder(parser, folder);
 		}
@@ -85,7 +89,7 @@ public class BTController {
 				terms.add(new BusTerm(id++, tokens));
 			}
 		}
-		
+
 		return terms;
 	}
 
@@ -143,14 +147,6 @@ public class BTController {
 		astVisitor.setFile(file);
 		cu.accept(astVisitor);
 
-	}
-
-	private ASTParser createParser() {
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
-
-		setParserConf(parser);
-
-		return parser;
 	}
 
 	private void setParserConf(ASTParser parser) {

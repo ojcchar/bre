@@ -53,39 +53,29 @@ public class VariablesVisitor extends ASTVisitor {
 		List<Token> tokens = NLPProcessor.getInstance().processText(identifier,
 				true);
 
-		BusTerm bTerm = findBT(tokens);
-
-		if (bTerm == null) {
-			return;
-		}
-
-		HashMap<String, List<VarBT>> map = this.getBtMatches().get(bTerm);
-
-		if (map == null) {
-			map = new HashMap<String, List<VarBT>>();
-			getBtMatches().put(bTerm, map);
-		}
-		List<VarBT> list = map.get(file.getAbsolutePath());
-		if (list == null) {
-			list = new ArrayList<VarBT>();
-			map.put(file.getAbsolutePath(), list);
-		}
-		list.add(new VarBT(tokens, cu.getLineNumber(node.getStartPosition()),
-				identifier));
-
-	}
-
-	private BusTerm findBT(List<Token> tokens) {
-
 		for (BusTerm bTerm : this.bTerms) {
 
 			boolean b = contains(bTerm, tokens);
-			if (b) {
-				return bTerm;
+			if (!b) {
+				continue;
 			}
 
+			HashMap<String, List<VarBT>> map = this.getBtMatches().get(bTerm);
+
+			if (map == null) {
+				map = new HashMap<String, List<VarBT>>();
+				getBtMatches().put(bTerm, map);
+			}
+			List<VarBT> list = map.get(file.getAbsolutePath());
+			if (list == null) {
+				list = new ArrayList<VarBT>();
+				map.put(file.getAbsolutePath(), list);
+			}
+			list.add(new VarBT(tokens,
+					cu.getLineNumber(node.getStartPosition()), identifier));
+
 		}
-		return null;
+
 	}
 
 	private boolean contains(BusTerm bTerm, List<Token> tokens) {

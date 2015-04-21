@@ -18,6 +18,7 @@ public class MainBTs {
 	private static String[] classPaths;
 	private static File outFile;
 	private static File inFile;
+	private static String[] processFolders;
 
 	public static void main(String args[]) {
 
@@ -26,7 +27,7 @@ public class MainBTs {
 			parseArguments(args);
 
 			controller = new BTController(sourceFolders, classPaths, inFile,
-					outFile);
+					outFile, processFolders);
 			controller.processRules();
 
 		} catch (Exception e) {
@@ -47,15 +48,15 @@ public class MainBTs {
 	}
 
 	private static void parseArguments(String[] args) throws Exception {
-		if (args.length != 4) {
+		if (args.length != 5) {
 			throw new Exception(
-					"Arguments must be 4: [source_folders] [classpaths] [in_bt_file] [out_csv_file]");
+					"Arguments must be 5: [process_folders] [source_folders] [classpaths] [in_bt_file] [out_csv_file]");
 		}
-
-		sourceFolders = args[0].split(",");
-		classPaths = args[1].split(",");
-		inFile = new File(args[2]);
-		outFile = new File(args[3]);
+		processFolders = args[0].split(",");
+		sourceFolders = args[1].split(",");
+		classPaths = args[2].split(",");
+		inFile = new File(args[3]);
+		outFile = new File(args[4]);
 	}
 
 }
