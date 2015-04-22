@@ -37,9 +37,9 @@ public class NLPProcessor {
 		return instance;
 	}
 
-	public List<Token> processText(String text, boolean isIdent) {
+	public List<Token> processText(String text, boolean breakCamelCase) {
 		// create an empty Annotation just with the given text
-		Annotation document = new Annotation(isIdent ? splitCamelCase(text) : text);
+		Annotation document = new Annotation(breakCamelCase ? splitCamelCase(text) : text);
 
 		// run all Annotators on this text
 		pipeline.annotate(document);

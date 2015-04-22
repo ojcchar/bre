@@ -2,6 +2,7 @@ package edu.utdallas.seers.bre.javabre.extractor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
@@ -10,9 +11,18 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class SymbolicLiteralExtractor implements RuleExtractor {
+
+	private Set<Term> businessTerms;
+	private Set<Term> sysTerms;
+
+	public SymbolicLiteralExtractor(Set<Term> businessTerms, Set<Term> sysTerms) {
+		this.businessTerms = businessTerms;
+		this.sysTerms = sysTerms;
+	}
 
 	@SuppressWarnings({ "rawtypes" })
 	public List<BusinessRule> extract(JavaFileInfo info) {
@@ -31,6 +41,10 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 				String term1 = frag.getName().toString();
 
 				if ("serialVersionUID".equalsIgnoreCase(term1)) {
+					continue;
+				}
+
+				if (Utils.isInValidIdent(term1, businessTerms, this.sysTerms)) {
 					continue;
 				}
 

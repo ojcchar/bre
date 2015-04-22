@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class CategorizationEnumExtractor {
@@ -19,6 +20,14 @@ public class CategorizationEnumExtractor {
 	final String[] templates = { "A {0} is by definition either {1} or {2}",
 			"A {0} is by definition one of the following: {1}",
 			"The {0} of a {1} is by definition one of the following: {2}." };
+	private Set<Term> businessTerms;
+	private Set<Term> sysTerms;
+
+	public CategorizationEnumExtractor(Set<Term> businessTerms,
+			Set<Term> sysTerms) {
+		this.businessTerms = businessTerms;
+		this.sysTerms = sysTerms;
+	}
 
 	public List<BusinessRule> extract(
 			HashMap<TypeDcl, List<TypeDeclaration>> classHierarchy,
@@ -31,10 +40,15 @@ public class CategorizationEnumExtractor {
 		for (Entry<TypeDcl, List<TypeDeclaration>> entry : entrySet) {
 			TypeDcl superClass = entry.getKey();
 
-			if (superClass.getType().equals(TypeDcl.TypeDclType.INTERFACE)) {
+			// if (superClass.getType().equals(TypeDcl.TypeDclType.INTERFACE)) {
+			// continue;
+			// }
+
+			if (Utils.isInValidIdent(superClass.getName(), businessTerms,
+					this.sysTerms)) {
 				continue;
 			}
-
+			
 			List<TypeDeclaration> subClasses = entry.getValue();
 			if (subClasses.size() == 1) {
 				continue;
@@ -82,7 +96,8 @@ public class CategorizationEnumExtractor {
 		for (TypeDeclaration tDcl : subClasses) {
 			SimpleName clName = tDcl.getName();
 
-			buf.append(Utils.bracketizeStr(clName.toString()));
+			String subName = clName.toString();
+			buf.append(Utils.bracketizeStr(subName));
 			buf.append(COMMA);
 		}
 

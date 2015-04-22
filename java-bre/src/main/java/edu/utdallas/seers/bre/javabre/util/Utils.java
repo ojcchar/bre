@@ -1,9 +1,23 @@
 package edu.utdallas.seers.bre.javabre.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.ASTParser;
 
 import edu.utdallas.seers.bre.javabre.controller.NLPProcessor;
 import edu.utdallas.seers.bre.javabre.entity.words.Token;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 
 public class Utils {
 
@@ -24,7 +38,8 @@ public class Utils {
 
 	public static String getNLText(String txt) {
 
-		List<Token> tokensTerm = NLPProcessor.getInstance().processText(txt, true);
+		List<Token> tokensTerm = NLPProcessor.getInstance().processText(txt,
+				true);
 
 		return getNLTokens(tokensTerm);
 	}
@@ -72,6 +87,98 @@ public class Utils {
 
 		}
 		return contains;
+	}
+
+	public static Set<Term> readTermsFile(File inFile) throws IOException {
+
+		Set<Term> terms = new HashSet<Term>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(inFile))) {
+			for (String line; (line = br.readLine()) != null;) {
+
+				List<Token> tokens = NLPProcessor.getInstance().processText(
+						line, false);
+				// if (hasNouns(tokens)) {
+				terms.add(new Term(tokens));
+				// }
+			}
+		}
+
+		return terms;
+	}
+
+	public static char[] readFile(File path) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path.getAbsolutePath()));
+		return new String(encoded, Charset.defaultCharset()).toCharArray();
+	}
+
+	// private static final List<String> NOUNS = Arrays.asList(new String[] {
+	// "NN", "NNS", "NNP", "NNPS" });
+	//
+	// private static boolean hasNouns(List<Token> tokens) {
+	//
+	// for (Token token : tokens) {
+	// if (NOUNS.contains(token.getPos())) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
+
+	public static void setParserConf(ASTParser parser, String[] encodings,
+			String[] sourceFolders, String[] classPaths) {
+		@SuppressWarnings("unchecked")
+		Map<String, String> options = JavaCore.getOptions();
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
+				JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
+		JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
+
+		parser.setBindingsRecovery(true);
+		parser.setStatementsRecovery(true);
+		parser.setCompilerOptions(options);
+		parser.setResolveBindings(true);
+
+		parser.setEnvironment(classPaths, sourceFolders, encodings, true);
+	}
+
+	public static boolean contains(Term bTerm, List<Token> tokens) {
+		List<Token> tokens2 = bTerm.getTokens();
+		for (Token tokenBt : tokens2) {
+			for (Token token : tokens) {
+				if (tokenBt.getLemma().equalsIgnoreCase(token.getLemma())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean isTermContained(String term, Set<Term> termsSet) {
+
+		if (termsSet == null || termsSet.isEmpty()) {
+			return true;
+		}
+
+		List<Token> tokens = NLPProcessor.getInstance().processText(term, true);
+		for (Term bTerm : termsSet) {
+			boolean c = contains(bTerm, tokens);
+			if (c) {
+				return c;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean isInValidIdent(String terms, Set<Term> businessTerms,
+			Set<Term> sysTerms) {
+
+		boolean sys = Utils.isTermContained(terms, sysTerms);
+		boolean bus = Utils.isTermContained(terms, businessTerms);
+		return sys && !bus;
+
 	}
 
 }

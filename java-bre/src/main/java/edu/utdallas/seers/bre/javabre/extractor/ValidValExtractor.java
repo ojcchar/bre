@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.MaxMin;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 import edu.utdallas.seers.bre.javabre.visitor.InFixExprVisitor;
 
@@ -21,6 +22,13 @@ public class ValidValExtractor implements RuleExtractor {
 			"A {0} is by definition at least {1} and at most {2}",
 			"A {0} is by definition at least {1}",
 			"A {0} is by definition at most {1}" };
+	private Set<Term> businessTerms;
+	private Set<Term> sysTerms;
+
+	public ValidValExtractor(Set<Term> businessTerms, Set<Term> sysTerms) {
+		this.businessTerms = businessTerms;
+		this.sysTerms = sysTerms;
+	}
 
 	public List<BusinessRule> extract(JavaFileInfo info) {
 		List<BusinessRule> rules = new ArrayList<BusinessRule>();
@@ -44,6 +52,11 @@ public class ValidValExtractor implements RuleExtractor {
 				MaxMin value = entry.getValue();
 				String[] values = null;
 				String term0 = entry.getKey();
+
+				if (Utils.isInValidIdent(term0, businessTerms, this.sysTerms)) {
+					continue;
+				}
+
 				String nlTerm = Utils.bracketizeStr(term0);
 				if (value.min == null || value.max == null) {
 					if (value.max == null) {

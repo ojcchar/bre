@@ -1,20 +1,10 @@
 package edu.utdallas.seers.bre.javabre.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -23,9 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.utdallas.seers.bre.javabre.controller.writer.BTWriter;
-import edu.utdallas.seers.bre.javabre.entity.words.Token;
-import edu.utdallas.seers.bre.javabre.entity.words.bt.BusTerm;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.VarBT;
+import edu.utdallas.seers.bre.javabre.util.Utils;
 import edu.utdallas.seers.bre.javabre.visitor.VariablesVisitor;
 
 public class BTController {
@@ -58,11 +48,11 @@ public class BTController {
 
 	public void processRules() throws Exception {
 
-		Set<BusTerm> bTerms = readBTerms();
+		Set<Term> bTerms = Utils.readTermsFile(inBtFile);
 		astVisitor.setbTerms(bTerms);
 
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
-		setParserConf(parser);
+		Utils.setParserConf(parser, encodings, sourceFolders, classPaths);
 
 		for (String srcFolder : processFolders) {
 			File folder = new File(srcFolder);
@@ -71,42 +61,10 @@ public class BTController {
 
 		// -----------------------
 
-		HashMap<BusTerm, HashMap<String, Set<VarBT>>> matches = astVisitor
+		HashMap<Term, HashMap<String, Set<VarBT>>> matches = astVisitor
 				.getBtMatches();
 		writer.writeBtMatches(matches);
 
-	}
-
-	private Set<BusTerm> readBTerms() throws IOException {
-
-		Set<BusTerm> terms = new HashSet<BusTerm>();
-
-		int id = 0;
-		try (BufferedReader br = new BufferedReader(new FileReader(inBtFile))) {
-			for (String line; (line = br.readLine()) != null;) {
-
-				List<Token> tokens = NLPProcessor.getInstance().processText(
-						line, false);
-				if (hasNouns(tokens)) {
-					terms.add(new BusTerm(id++, tokens));
-				}
-			}
-		}
-
-		return terms;
-	}
-
-	private static final List<String> NOUNS = Arrays.asList(new String[] {
-			"NN", "NNS", "NNP", "NNPS" });
-
-	private boolean hasNouns(List<Token> tokens) {
-
-		for (Token token : tokens) {
-			if (NOUNS.contains(token.getPos())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private void processFolder(ASTParser parser, File folder)
@@ -140,12 +98,12 @@ public class BTController {
 
 		LOGGER.info("Processing: " + file.getName());
 
-		char[] fileContent = readFile(file);
+		char[] fileContent = Utils.readFile(file);
 		parser.setUnitName(file.getName());
 		parser.setSource(fileContent);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
-		setParserConf(parser);
+		Utils.setParserConf(parser, encodings, sourceFolders, classPaths);
 
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
@@ -163,28 +121,6 @@ public class BTController {
 		astVisitor.setFile(file);
 		cu.accept(astVisitor);
 
-	}
-
-	private void setParserConf(ASTParser parser) {
-		@SuppressWarnings("unchecked")
-		Map<String, String> options = JavaCore.getOptions();
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
-		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-				JavaCore.VERSION_1_8);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
-		JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
-
-		parser.setBindingsRecovery(true);
-		parser.setStatementsRecovery(true);
-		parser.setCompilerOptions(options);
-		parser.setResolveBindings(true);
-
-		parser.setEnvironment(classPaths, sourceFolders, encodings, true);
-	}
-
-	private char[] readFile(File path) throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path.getAbsolutePath()));
-		return new String(encoded, Charset.defaultCharset()).toCharArray();
 	}
 
 	public void close() throws IOException {

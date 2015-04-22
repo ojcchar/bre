@@ -14,8 +14,9 @@ import org.eclipse.jdt.core.dom.SimpleName;
 
 import edu.utdallas.seers.bre.javabre.controller.NLPProcessor;
 import edu.utdallas.seers.bre.javabre.entity.words.Token;
-import edu.utdallas.seers.bre.javabre.entity.words.bt.BusTerm;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.VarBT;
+import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class VariablesVisitor extends ASTVisitor {
 
@@ -25,13 +26,13 @@ public class VariablesVisitor extends ASTVisitor {
 	private CompilationUnit cu;
 	private File file;
 
-	private Set<BusTerm> bTerms;
+	private Set<Term> bTerms;
 
 	// pos -> [ lemma -> freq,statement ]
-	private HashMap<BusTerm, HashMap<String, Set<VarBT>>> btMatches;
+	private HashMap<Term, HashMap<String, Set<VarBT>>> btMatches;
 
 	public VariablesVisitor() {
-		setBtMatches(new HashMap<BusTerm, HashMap<String, Set<VarBT>>>());
+		setBtMatches(new HashMap<Term, HashMap<String, Set<VarBT>>>());
 	}
 
 	@Override
@@ -53,9 +54,9 @@ public class VariablesVisitor extends ASTVisitor {
 		List<Token> tokens = NLPProcessor.getInstance().processText(identifier,
 				true);
 
-		for (BusTerm bTerm : this.bTerms) {
+		for (Term bTerm : this.bTerms) {
 
-			boolean b = contains(bTerm, tokens);
+			boolean b = Utils.contains(bTerm, tokens);
 			if (!b) {
 				continue;
 			}
@@ -94,18 +95,6 @@ public class VariablesVisitor extends ASTVisitor {
 	// return true;
 	// }
 
-	private boolean contains(BusTerm bTerm, List<Token> tokens) {
-		List<Token> tokens2 = bTerm.getTokens();
-		for (Token tokenBt : tokens2) {
-			for (Token token : tokens) {
-				if (tokenBt.getLemma().equalsIgnoreCase(token.getLemma())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 	public CompilationUnit getCu() {
 		return cu;
 	}
@@ -122,20 +111,20 @@ public class VariablesVisitor extends ASTVisitor {
 		this.file = file;
 	}
 
-	public Set<BusTerm> getbTerms() {
+	public Set<Term> getbTerms() {
 		return bTerms;
 	}
 
-	public void setbTerms(Set<BusTerm> bTerms) {
+	public void setbTerms(Set<Term> bTerms) {
 		this.bTerms = bTerms;
 	}
 
-	public HashMap<BusTerm, HashMap<String, Set<VarBT>>> getBtMatches() {
+	public HashMap<Term, HashMap<String, Set<VarBT>>> getBtMatches() {
 		return btMatches;
 	}
 
 	public void setBtMatches(
-			HashMap<BusTerm, HashMap<String, Set<VarBT>>> btMatches) {
+			HashMap<Term, HashMap<String, Set<VarBT>>> btMatches) {
 		this.btMatches = btMatches;
 	}
 

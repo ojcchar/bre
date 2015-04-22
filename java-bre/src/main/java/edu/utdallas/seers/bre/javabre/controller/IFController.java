@@ -4,15 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -22,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import edu.utdallas.seers.bre.javabre.controller.writer.IFWriter;
 import edu.utdallas.seers.bre.javabre.entity.IFstmt;
+import edu.utdallas.seers.bre.javabre.util.Utils;
 import edu.utdallas.seers.bre.javabre.visitor.IFVisitor;
 
 public class IFController {
@@ -58,7 +54,7 @@ public class IFController {
 	public void processRules() throws Exception {
 
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
-		setParserConf(parser);
+		Utils.setParserConf(parser, encodings, sourceFolders, classPaths);
 
 		for (String srcFolder : processFolders) {
 			File folder = new File(srcFolder);
@@ -127,12 +123,12 @@ public class IFController {
 
 		LOGGER.info("Processing: " + file.getName());
 
-		char[] fileContent = readFile(file);
+		char[] fileContent = Utils.readFile(file);
 		parser.setUnitName(file.getName());
 		parser.setSource(fileContent);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
-		setParserConf(parser);
+		Utils.setParserConf(parser, encodings, sourceFolders, classPaths);
 
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
@@ -156,28 +152,6 @@ public class IFController {
 		HashMap<String, Set<IFstmt>> ifSt = astVisitor.getIfStmts();
 		writer.writeIfStmts(file, ifSt);
 
-	}
-
-	private void setParserConf(ASTParser parser) {
-		@SuppressWarnings("unchecked")
-		Map<String, String> options = JavaCore.getOptions();
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
-		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-				JavaCore.VERSION_1_8);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
-		JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
-
-		parser.setBindingsRecovery(true);
-		parser.setStatementsRecovery(true);
-		parser.setCompilerOptions(options);
-		parser.setResolveBindings(true);
-
-		parser.setEnvironment(classPaths, sourceFolders, encodings, true);
-	}
-
-	private char[] readFile(File path) throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path.getAbsolutePath()));
-		return new String(encoded, Charset.defaultCharset()).toCharArray();
 	}
 
 	public void close() throws IOException {

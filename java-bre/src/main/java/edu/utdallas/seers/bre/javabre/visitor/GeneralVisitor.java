@@ -1,7 +1,5 @@
 package edu.utdallas.seers.bre.javabre.visitor;
 
-import java.util.List;
-
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -9,16 +7,13 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
-import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class GeneralVisitor extends ASTVisitor {
 
 	private JavaFileInfo fileInfo;
-	private List<String> businessTerms;
 
-	public GeneralVisitor(List<String> businessTerms) {
+	public GeneralVisitor() {
 		fileInfo = new JavaFileInfo();
-		this.businessTerms = businessTerms;
 	}
 
 	@Override
@@ -33,14 +28,14 @@ public class GeneralVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-
-		String className1 = node.getName().toString();
-
-		boolean share = Utils.shareBusinessTerms(className1, businessTerms);
-
-		if (!share) {
-			return false;
-		}
+		//
+		// String className1 = node.getName().toString();
+		//
+		// boolean share = Utils.shareBusinessTerms(className1, businessTerms);
+		//
+		// if (!share) {
+		// return false;
+		// }
 
 		fileInfo.getClasses().add(node);
 		return super.visit(node);

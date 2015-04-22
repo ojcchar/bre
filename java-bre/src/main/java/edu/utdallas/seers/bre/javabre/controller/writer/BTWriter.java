@@ -9,7 +9,7 @@ import java.util.Set;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import edu.utdallas.seers.bre.javabre.entity.words.Token;
-import edu.utdallas.seers.bre.javabre.entity.words.bt.BusTerm;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.VarBT;
 
 public class BTWriter {
@@ -71,10 +71,10 @@ public class BTWriter {
 	}
 
 	public void writeBtMatches(
-			HashMap<BusTerm, HashMap<String, Set<VarBT>>> matches) {
-		Set<Entry<BusTerm, HashMap<String, Set<VarBT>>>> entrySet = matches
+			HashMap<Term, HashMap<String, Set<VarBT>>> matches) {
+		Set<Entry<Term, HashMap<String, Set<VarBT>>>> entrySet = matches
 				.entrySet();
-		for (Entry<BusTerm, HashMap<String, Set<VarBT>>> entry : entrySet) {
+		for (Entry<Term, HashMap<String, Set<VarBT>>> entry : entrySet) {
 			Set<Entry<String, Set<VarBT>>> entrySet2 = entry.getValue()
 					.entrySet();
 			for (Entry<String, Set<VarBT>> entry2 : entrySet2) {

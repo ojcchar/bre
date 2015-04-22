@@ -1,18 +1,12 @@
 package edu.utdallas.seers.bre.javabre.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -27,10 +21,12 @@ import edu.utdallas.seers.bre.javabre.controller.writer.RulesWriter;
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.extractor.CategorizationEnumExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.RuleExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.SymbolicLiteralExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.ValidValExtractor;
+import edu.utdallas.seers.bre.javabre.util.Utils;
 import edu.utdallas.seers.bre.javabre.visitor.GeneralVisitor;
 
 public class RulesController {
@@ -43,14 +39,16 @@ public class RulesController {
 	private String[] classPaths;
 	private RulesWriter writer;
 	private String[] encodings;
-	private List<String> businessTerms;
+	private Set<Term> businessTerms;
 	private String[] processFolders;
+	private Set<Term> sysTerms;
 
 	public RulesController(String[] sourceFolders, String[] classPaths,
-			File outFile, File bussFile, String[] processFolders)
+			File outFile, File bussFile, String[] processFolders, File sysFile)
 			throws IOException {
 		this.writer = new RulesWriter(outFile);
-		readBusinessTerms(bussFile);
+		businessTerms = Utils.readTermsFile(bussFile);
+		sysTerms = Utils.readTermsFile(sysFile);
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
 		this.processFolders = processFolders;
@@ -61,26 +59,17 @@ public class RulesController {
 		}
 	}
 
-	private void readBusinessTerms(File bussFile) throws IOException {
-		businessTerms = new ArrayList<String>();
-
-		try (BufferedReader br = new BufferedReader(new FileReader(bussFile))) {
-			for (String line; (line = br.readLine()) != null;) {
-				businessTerms.add(line.trim());
-			}
-		}
-	}
-
 	public void processRules() throws Exception {
 
-		ASTParser parser = createParser();
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		Utils.setParserConf(parser, encodings, sourceFolders, classPaths);
 
 		for (String srcFolder : processFolders) {
 			File folder = new File(srcFolder);
 			processFolder(parser, folder);
 		}
 
-		CategorizationEnumExtractor ex = new CategorizationEnumExtractor();
+		CategorizationEnumExtractor ex = new CategorizationEnumExtractor(businessTerms, sysTerms);
 		List<BusinessRule> rules = ex.extract(subclasses, classesInfo);
 
 		writer.writeRules(rules);
@@ -118,11 +107,11 @@ public class RulesController {
 
 		LOGGER.info("Processing: " + file.getName());
 
-		char[] fileContent = readFile(file);
+		char[] fileContent = Utils.readFile(file);
 		parser.setUnitName(file.getName());
 		parser.setSource(fileContent);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		setParserConf(parser);
+		Utils.setParserConf(parser, encodings, sourceFolders, classPaths);
 
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
@@ -136,7 +125,7 @@ public class RulesController {
 		}
 		// ---------------------
 
-		GeneralVisitor astVisitor = new GeneralVisitor(businessTerms);
+		GeneralVisitor astVisitor = new GeneralVisitor();
 		cu.accept(astVisitor);
 		JavaFileInfo fileInfo = astVisitor.getFileInfo();
 		fileInfo.setFile(file);
@@ -144,11 +133,11 @@ public class RulesController {
 
 		updateHierarchy(fileInfo);
 
-		RuleExtractor extractor = new SymbolicLiteralExtractor();
+		RuleExtractor extractor = new SymbolicLiteralExtractor(businessTerms, sysTerms);
 		List<BusinessRule> rules = extractor.extract(fileInfo);
 		writer.writeRules(rules);
 
-		extractor = new ValidValExtractor();
+		extractor = new ValidValExtractor(businessTerms, sysTerms);
 		List<BusinessRule> rules2 = extractor.extract(fileInfo);
 		// System.out.println(rules2);
 		writer.writeRules(rules2);
@@ -203,36 +192,6 @@ public class RulesController {
 
 		}
 
-	}
-
-	private ASTParser createParser() {
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
-
-		setParserConf(parser);
-
-		return parser;
-	}
-
-	private void setParserConf(ASTParser parser) {
-		@SuppressWarnings("unchecked")
-		Map<String, String> options = JavaCore.getOptions();
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
-		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-				JavaCore.VERSION_1_8);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
-		JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
-
-		parser.setBindingsRecovery(true);
-		parser.setStatementsRecovery(true);
-		parser.setCompilerOptions(options);
-		parser.setResolveBindings(true);
-
-		parser.setEnvironment(classPaths, sourceFolders, encodings, true);
-	}
-
-	private char[] readFile(File path) throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path.getAbsolutePath()));
-		return new String(encoded, Charset.defaultCharset()).toCharArray();
 	}
 
 	public void close() throws IOException {
