@@ -44,13 +44,16 @@ public class RulesController {
 	private RulesWriter writer;
 	private String[] encodings;
 	private List<String> businessTerms;
+	private String[] processFolders;
 
 	public RulesController(String[] sourceFolders, String[] classPaths,
-			File outFile, File bussFile) throws IOException {
+			File outFile, File bussFile, String[] processFolders)
+			throws IOException {
 		this.writer = new RulesWriter(outFile);
 		readBusinessTerms(bussFile);
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
+		this.processFolders = processFolders;
 
 		encodings = new String[sourceFolders.length];
 		for (int i = 0; i < sourceFolders.length; i++) {
@@ -72,7 +75,7 @@ public class RulesController {
 
 		ASTParser parser = createParser();
 
-		for (String srcFolder : sourceFolders) {
+		for (String srcFolder : processFolders) {
 			File folder = new File(srcFolder);
 			processFolder(parser, folder);
 		}
@@ -119,7 +122,6 @@ public class RulesController {
 		parser.setUnitName(file.getName());
 		parser.setSource(fileContent);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
 		setParserConf(parser);
 
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);

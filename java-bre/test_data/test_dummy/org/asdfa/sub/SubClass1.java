@@ -1,9 +1,12 @@
+package org.asdfa.sub;
 import org.asdfa.OtherClass;
 import org.asdfa.SuperClass;
 import org.asdfa.SuperInterface;
 
 public class SubClass1 extends SuperClass implements SuperInterface {
 
+	private static final int _4000 = 4000;
+	private static final int _100 = 100;
 	private String attrOne;
 	private Integer attrTwo;
 	public static final Double CONSTANT_VAL = 2.3;
@@ -25,6 +28,12 @@ public class SubClass1 extends SuperClass implements SuperInterface {
 			}
 		} else {
 			return;
+		}
+		
+		int variable4 = 0;
+		int variable3 = 0;
+		if (variable3 > SubClass21._100 && variable4 < _4000) {
+			System.out.println();
 		}
 		
 		if (attrOne == null) {

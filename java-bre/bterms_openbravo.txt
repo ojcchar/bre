@@ -18,7 +18,6 @@ bp group
 reactivate online
 view results       
 received in
-html format
 filter window
 transaction range
 sales transaction
@@ -229,7 +228,6 @@ updated
 yes
 refunded sales orders report
 module name
-windows/macos/linux
 proposal date
 add attachment
 day ranges
@@ -345,7 +343,6 @@ start from date
 client
 payment proposal:
 use default email configration
-false
 corridor
 product values
 from project ending date
@@ -408,15 +405,12 @@ employee
 less than
 function
 shipment receipt selector
-macos/windows
 expense sheet
-openbravo 
 canceled(invoice not paid)
 document
 reply-to
 source
 tax report
-www.sourceforge.net
 show p&l closing entries
 fixed
 do not use credit
@@ -441,7 +435,6 @@ month
 show test
 title
 orders until
-restart servlet container now  
 collapse all
 field
 pdf format
@@ -458,7 +451,6 @@ location/address
 autocalculated
 height
 module
-select price from price list
 receivable
 payment date to
 project
@@ -488,7 +480,6 @@ actual payment out
 devolutions
 payment document no.
 volume
-rebuild the system
 transaction date to
 attribute set value
 current password
@@ -517,7 +508,6 @@ vendor
 attribute
 primary filter
 expected payment out
-string
 out going
 show translation tabs
 pending qty
@@ -548,7 +538,6 @@ register modules
 file name
 match using imported bank statement
 in coming
-class
 use the following module-specific exceptions:
 scheduled date from
 index

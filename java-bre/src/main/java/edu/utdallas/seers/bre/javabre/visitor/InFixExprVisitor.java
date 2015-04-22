@@ -7,13 +7,20 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.InfixExpression.Operator;
 import org.eclipse.jdt.core.dom.NumberLiteral;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 
+import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.MaxMin;
 
 public class InFixExprVisitor extends ASTVisitor {
 
 	private HashMap<String, MaxMin> varsValues = new HashMap<String, MaxMin>();
+	private JavaFileInfo info;
+
+	public InFixExprVisitor(JavaFileInfo info) {
+		this.info = info;
+	}
 
 	@Override
 	public boolean visit(InfixExpression node) {
@@ -32,17 +39,25 @@ public class InFixExprVisitor extends ASTVisitor {
 		String[] varVal = null;
 		boolean left = false;
 		if ((leftOp instanceof SimpleName)
-				&& (rightOp instanceof NumberLiteral)) {
+				&& (rightOp instanceof NumberLiteral
+						|| rightOp instanceof SimpleName || rightOp instanceof QualifiedName)) {
 			varVal = new String[] { leftOp.toString(), rightOp.toString() };
 			left = true;
 		}
 
 		if ((rightOp instanceof SimpleName)
-				&& (leftOp instanceof NumberLiteral)) {
+				&& (leftOp instanceof NumberLiteral
+						|| leftOp instanceof SimpleName || leftOp instanceof QualifiedName)) {
 			varVal = new String[] { rightOp.toString(), leftOp.toString() };
 		}
 
 		if (varVal == null) {
+			// extractConstantCond(node);
+			// if (rightOp instanceof QualifiedName) {
+			// System.out.println("bind: "+((org.eclipse.jdt.core.dom.QualifiedName)
+			// rightOp).getQualifier().resolveTypeBinding());
+			// }
+
 			return super.visit(node);
 		}
 

@@ -1,3 +1,4 @@
+package org.asdfa.sub;
 import org.asdfa.SuperClass;
 
 

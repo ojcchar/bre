@@ -31,7 +31,7 @@ public class ValidValExtractor implements RuleExtractor {
 
 			Expression expression = ifStmt.getExpression();
 
-			InFixExprVisitor inFixExprVisitor = new InFixExprVisitor();
+			InFixExprVisitor inFixExprVisitor = new InFixExprVisitor(info);
 			expression.accept(inFixExprVisitor);
 
 			HashMap<String, MaxMin> varsValues = inFixExprVisitor
