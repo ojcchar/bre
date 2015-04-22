@@ -39,7 +39,8 @@ public class NLPProcessor {
 
 	public List<Token> processText(String text, boolean breakCamelCase) {
 		// create an empty Annotation just with the given text
-		Annotation document = new Annotation(breakCamelCase ? splitCamelCase(text) : text);
+		Annotation document = new Annotation(
+				breakCamelCase ? splitCamelCase(text) : text);
 
 		// run all Annotators on this text
 		pipeline.annotate(document);
@@ -74,8 +75,8 @@ public class NLPProcessor {
 	}
 
 	static String splitCamelCase(String s) {
-		
-		//FIXME: sometimes underscore and camel case are mixed
+
+		// FIXME: sometimes underscore and camel case are mixed
 		if (s.contains("_")) {
 			s = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, s);
 		}
@@ -84,7 +85,7 @@ public class NLPProcessor {
 				"(?<=[^A-Z])(?=[A-Z])", "(?<=[A-Za-z])(?=[^A-Za-z])");
 		String text = s.replaceAll(regex, " ");
 
-		return text;
+		return text.toLowerCase();
 	}
 
 }

@@ -146,7 +146,12 @@ public class Utils {
 	public static boolean contains(Term bTerm, List<Token> tokens) {
 		List<Token> tokens2 = bTerm.getTokens();
 		for (Token tokenBt : tokens2) {
+
 			for (Token token : tokens) {
+				// if (tokenBt.getWord().equalsIgnoreCase("ui")
+				// && token.getWord().equalsIgnoreCase("ui")) {
+				// System.out.println(tokenBt + " - " + token);
+				// }
 				if (tokenBt.getLemma().equalsIgnoreCase(token.getLemma())) {
 					return true;
 				}
@@ -177,7 +182,8 @@ public class Utils {
 
 		boolean sys = Utils.isTermContained(terms, sysTerms);
 		boolean bus = Utils.isTermContained(terms, businessTerms);
-		return sys && !bus;
+		// return sys && !bus;
+		return (sys || !bus);
 
 	}
 
