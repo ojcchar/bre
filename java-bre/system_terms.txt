@@ -23,8 +23,8 @@ android
 windows
 macos
 linux
-true
-false
+TRUE
+FALSE
 www
 servlet
 string
@@ -67,3 +67,34 @@ image selector
 array
 pixel
 border size 
+property
+tab
+parameter
+component
+clause
+binary
+oracle
+postgresql
+mysql
+postgres
+microsoft
+persistence
+field
+event
+observer
+listener
+foreign key
+primitive type
+validator
+error code
+counter
+insertion
+sl4j
+log4j
+filter
+comparator
+scroll
+js
+mobile
+software
+loop
