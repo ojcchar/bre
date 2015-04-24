@@ -160,15 +160,34 @@ public class Utils {
 		return false;
 	}
 
-	public static boolean isTermContained(String term, Set<Term> termsSet) {
+	private static boolean containsAllTakens(Term bTerm, List<Token> tokens) {
+		List<Token> tokens2 = bTerm.getTokens();
+		for (Token tokenBt : tokens2) {
+			boolean isTokenUsed = false;
+			for (Token token : tokens) {
+				if (tokenBt.getLemma().equalsIgnoreCase(token.getLemma())) {
+					isTokenUsed = true;
+					break;
+				}
+			}
+
+			if (!isTokenUsed) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean isTermContained(String term, Set<Term> termsSet, boolean b) {
 
 		if (termsSet == null || termsSet.isEmpty()) {
-			return true;
+			return b;
 		}
 
-		List<Token> tokens = NLPProcessor.getInstance().processText(term, true);
+		List<Token> tokensTerm = NLPProcessor.getInstance().processText(term,
+				true);
 		for (Term bTerm : termsSet) {
-			boolean c = contains(bTerm, tokens);
+			boolean c = containsAllTakens(bTerm, tokensTerm);
 			if (c) {
 				return c;
 			}
@@ -177,13 +196,14 @@ public class Utils {
 		return false;
 	}
 
-	public static boolean isInValidIdent(String terms, Set<Term> businessTerms,
+	public static boolean isInValidIdent(String term, Set<Term> businessTerms,
 			Set<Term> sysTerms) {
 
-		boolean sys = Utils.isTermContained(terms, sysTerms);
-		boolean bus = Utils.isTermContained(terms, businessTerms);
+		boolean sys = Utils.isTermContained(term, sysTerms, false);
+		boolean bus = Utils.isTermContained(term, businessTerms, true);
 		// return sys && !bus;
-		return (sys || !bus);
+		boolean invalid = sys || !bus;
+		return invalid;
 
 	}
 
