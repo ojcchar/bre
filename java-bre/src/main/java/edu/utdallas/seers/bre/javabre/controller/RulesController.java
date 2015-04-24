@@ -22,6 +22,7 @@ import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
+import edu.utdallas.seers.bre.javabre.extractor.CategEnumConstExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.CategorizationEnumExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.RuleExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.SymbolicLiteralExtractor;
@@ -141,6 +142,10 @@ public class RulesController {
 		List<BusinessRule> rules2 = extractor.extract(fileInfo);
 		// System.out.println(rules2);
 		writer.writeRules(rules2);
+		
+		extractor = new CategEnumConstExtractor();
+		List<BusinessRule> rules3 = extractor.extract(fileInfo);
+		writer.writeRules(rules3);
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -150,13 +155,10 @@ public class RulesController {
 
 		for (TypeDeclaration cl : classes) {
 
-			Type superclType = cl.getSuperclassType();
-			List<Type> superintTypes = cl.superInterfaceTypes();
-
 			ITypeBinding subClassBind = cl.resolveBinding();
-
 			classesInfo.put(subClassBind.getQualifiedName(), fileInfo);
 
+			Type superclType = cl.getSuperclassType();
 			// super class
 			if (superclType != null) {
 				String qualName = superclType.resolveBinding()
@@ -173,6 +175,7 @@ public class RulesController {
 				subCl.add(cl);
 			}
 
+			List<Type> superintTypes = cl.superInterfaceTypes();
 			// super interfaces
 			if (!superintTypes.isEmpty()) {
 				for (Type type : superintTypes) {
