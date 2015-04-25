@@ -70,7 +70,8 @@ public class RulesController {
 			processFolder(parser, folder);
 		}
 
-		CategorizationEnumExtractor ex = new CategorizationEnumExtractor(businessTerms, sysTerms);
+		CategorizationEnumExtractor ex = new CategorizationEnumExtractor(
+				businessTerms, sysTerms);
 		List<BusinessRule> rules = ex.extract(subclasses, classesInfo);
 
 		writer.writeRules(rules);
@@ -134,7 +135,13 @@ public class RulesController {
 
 		updateHierarchy(fileInfo);
 
-		RuleExtractor extractor = new SymbolicLiteralExtractor(businessTerms, sysTerms);
+		CategEnumConstExtractor extractor2 = new CategEnumConstExtractor(
+				businessTerms, sysTerms);
+		List<BusinessRule> rules3 = extractor2.extract(fileInfo);
+		writer.writeRules(rules3);
+
+		RuleExtractor extractor = new SymbolicLiteralExtractor(businessTerms,
+				sysTerms, extractor2.getConstsRules());
 		List<BusinessRule> rules = extractor.extract(fileInfo);
 		writer.writeRules(rules);
 
@@ -142,10 +149,7 @@ public class RulesController {
 		List<BusinessRule> rules2 = extractor.extract(fileInfo);
 		// System.out.println(rules2);
 		writer.writeRules(rules2);
-		
-		extractor = new CategEnumConstExtractor(businessTerms, sysTerms);
-		List<BusinessRule> rules3 = extractor.extract(fileInfo);
-		writer.writeRules(rules3);
+
 	}
 
 	@SuppressWarnings({ "unchecked" })
