@@ -14,11 +14,19 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule.RuleType;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
+import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class CategEnumConstExtractor implements RuleExtractor {
 
 	private static final String TEMPLATE = "The {0} of a {1} is by definition one of the following: {2}.";
+	private Set<Term> sysTerms;
+	private Set<Term> businessTerms;
+
+	public CategEnumConstExtractor(Set<Term> businessTerms, Set<Term> sysTerms) {
+		this.sysTerms = sysTerms;
+		this.businessTerms = businessTerms;
+	}
 
 	@Override
 	public List<BusinessRule> extract(JavaFileInfo info) {
@@ -33,6 +41,11 @@ public class CategEnumConstExtractor implements RuleExtractor {
 		Set<String> keySet = constGroups.keySet();
 		for (String key : keySet) {
 			List<FieldDeclaration> consts = constGroups.get(key);
+
+			boolean b = isInvalidGroup(consts);
+			if (b) {
+				continue;
+			}
 
 			HashMap<String, Integer> freq = new HashMap<String, Integer>();
 			for (int i = 0; i < consts.size(); i++) {
@@ -72,6 +85,19 @@ public class CategEnumConstExtractor implements RuleExtractor {
 		// System.out.println(rules);
 
 		return rules;
+	}
+
+	private boolean isInvalidGroup(List<FieldDeclaration> consts) {
+		int numInv = 0;
+
+		for (FieldDeclaration cnt : consts) {
+			String nameCnt = ((VariableDeclarationFragment) cnt.fragments()
+					.get(0)).getName().toString();
+			if (Utils.isInValidIdent(nameCnt, businessTerms, sysTerms)) {
+				numInv++;
+			}
+		}
+		return (numInv / consts.size()) > 0.8;
 	}
 
 	private String getCategory(HashMap<String, Integer> freq,

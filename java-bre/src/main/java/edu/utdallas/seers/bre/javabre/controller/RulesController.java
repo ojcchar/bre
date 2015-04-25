@@ -143,7 +143,7 @@ public class RulesController {
 		// System.out.println(rules2);
 		writer.writeRules(rules2);
 		
-		extractor = new CategEnumConstExtractor();
+		extractor = new CategEnumConstExtractor(businessTerms, sysTerms);
 		List<BusinessRule> rules3 = extractor.extract(fileInfo);
 		writer.writeRules(rules3);
 	}
