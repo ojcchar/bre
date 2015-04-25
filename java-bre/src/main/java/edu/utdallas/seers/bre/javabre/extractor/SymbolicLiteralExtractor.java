@@ -18,10 +18,13 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 
 	private Set<Term> businessTerms;
 	private Set<Term> sysTerms;
+	private List<FieldDeclaration> constToOmit;
 
-	public SymbolicLiteralExtractor(Set<Term> businessTerms, Set<Term> sysTerms) {
+	public SymbolicLiteralExtractor(Set<Term> businessTerms,
+			Set<Term> sysTerms, List<FieldDeclaration> constToOmit) {
 		this.businessTerms = businessTerms;
 		this.sysTerms = sysTerms;
+		this.constToOmit = constToOmit;
 	}
 
 	@SuppressWarnings({ "rawtypes" })
@@ -34,6 +37,11 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 
 		for (FieldDeclaration constField : constFields) {
 			try {
+
+				if (constToOmit.contains(constField)) {
+					continue;
+				}
+
 				List fragments = constField.fragments();
 				VariableDeclarationFragment frag = (VariableDeclarationFragment) fragments
 						.get(0);

@@ -19,9 +19,12 @@ import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class CategEnumConstExtractor implements RuleExtractor {
 
-	private static final String TEMPLATE = "The {0} of a {1} is by definition one of the following: {2}.";
+	// private static final String TEMPLATE =
+	// "The {0} of a {1} is by definition one of the following: {2}.";
+	private static final String TEMPLATE = "The {0} is by definition one of the following: {2}.";
 	private Set<Term> sysTerms;
 	private Set<Term> businessTerms;
+	private List<FieldDeclaration> constsRules = new ArrayList<FieldDeclaration>();
 
 	public CategEnumConstExtractor(Set<Term> businessTerms, Set<Term> sysTerms) {
 		this.sysTerms = sysTerms;
@@ -68,7 +71,9 @@ public class CategEnumConstExtractor implements RuleExtractor {
 
 			String subStr = getCategory(freq, consts);
 
-			if (subStr != null) {
+			if (subStr != null && subStr.trim().length() > 2) {
+
+				this.constsRules.addAll(consts);
 
 				String brText = getBrText(subStr, consts);
 				BusinessRule rule = new BusinessRule(brText,
@@ -279,6 +284,14 @@ public class CategEnumConstExtractor implements RuleExtractor {
 			}
 		}
 		return constGroups;
+	}
+
+	public List<FieldDeclaration> getConstsRules() {
+		return constsRules;
+	}
+
+	public void setConstsRules(List<FieldDeclaration> constsRules) {
+		this.constsRules = constsRules;
 	}
 
 }
