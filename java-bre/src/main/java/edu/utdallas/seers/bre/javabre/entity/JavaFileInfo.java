@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class JavaFileInfo {
@@ -16,6 +17,8 @@ public class JavaFileInfo {
 	private List<FieldDeclaration> constFields = new ArrayList<FieldDeclaration>();
 	private List<IfStatement> ifStmts = new ArrayList<IfStatement>();
 	private CompilationUnit cu;
+	
+	private List<MethodInvocation> methodInvoc=new ArrayList<MethodInvocation>();
 
 	public File getFile() {
 		return file;
@@ -61,6 +64,14 @@ public class JavaFileInfo {
 
 	public void setIfStmts(List<IfStatement> ifStmts) {
 		this.ifStmts = ifStmts;
+	}
+
+	public List<MethodInvocation> getMethodInvoc() {
+		return methodInvoc;
+	}
+
+	public void setMethodInvoc(List<MethodInvocation> methodInvoc) {
+		this.methodInvoc = methodInvoc;
 	}
 
 }
