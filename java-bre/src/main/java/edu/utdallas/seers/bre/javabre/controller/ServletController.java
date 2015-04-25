@@ -2,7 +2,6 @@ package edu.utdallas.seers.bre.javabre.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -11,24 +10,17 @@ import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.utdallas.seers.bre.javabre.controller.writer.RulesWriter;
-import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
-import edu.utdallas.seers.bre.javabre.extractor.CategEnumConstExtractor;
-import edu.utdallas.seers.bre.javabre.extractor.RuleExtractor;
-import edu.utdallas.seers.bre.javabre.extractor.SymbolicLiteralExtractor;
-import edu.utdallas.seers.bre.javabre.extractor.ValidValExtractor;
 import edu.utdallas.seers.bre.javabre.util.Utils;
-import edu.utdallas.seers.bre.javabre.visitor.GeneralVisitor;
+import edu.utdallas.seers.bre.javabre.visitor.IfCondVisitor;
 import edu.utdallas.seers.bre.javabre.visitor.ServletVisitor;
 
 public class ServletController {
@@ -102,7 +94,7 @@ public class ServletController {
 			return;
 		}
 
-		LOGGER.info("Processing: " + file.getName());
+		// LOGGER.info("Processing: " + file.getName());
 
 		char[] fileContent = Utils.readFile(file);
 		parser.setUnitName(file.getName());
@@ -128,13 +120,22 @@ public class ServletController {
 
 		if (fileInfo != null) {
 			List<IfStatement> ifStmts = fileInfo.getIfStmts();
+
 			for (IfStatement ifSt : ifStmts) {
-				System.out.println(file.getName()
-						+ ","
-						+ ifSt.getExpression().toString().replace("\n", "\\n")
-						+ ","
-						+ ifSt.getThenStatement().toString()
-								.replace("\n", "\\n"));
+
+				IfCondVisitor vis = new IfCondVisitor(businessTerms, sysTerms);
+				ifSt.getExpression().accept(vis);
+
+				if (!vis.isInv()) {
+					System.out.println("\""
+							+ file.getName()
+							+ "\";\""
+							+ ifSt.getExpression().toString()
+									.replace("\n", "\\n")
+							+ "\";\""
+							+ ifSt.getThenStatement().toString()
+									.replace("\n", "\\n") + "\"");
+				}
 			}
 		}
 	}

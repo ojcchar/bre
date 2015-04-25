@@ -60,7 +60,9 @@ public class ServletVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(MethodInvocation node) {
-		fileInfo.getMethodInvoc().add(node);
+		if (fileInfo != null) {
+			fileInfo.getMethodInvoc().add(node);
+		}
 		return super.visit(node);
 	}
 

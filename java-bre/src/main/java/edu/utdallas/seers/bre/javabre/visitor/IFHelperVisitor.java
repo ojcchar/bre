@@ -18,6 +18,7 @@ public class IFHelperVisitor extends ASTVisitor {
 	public boolean visit(IfStatement node) {
 		Expression expression = node.getExpression();
 		expression.accept(this);
+		// FIXME: it should be true
 		return false;
 	}
 
