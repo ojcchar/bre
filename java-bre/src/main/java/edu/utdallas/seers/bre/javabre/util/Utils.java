@@ -178,7 +178,29 @@ public class Utils {
 		return true;
 	}
 
-	private static boolean isTermContained(String term, Set<Term> termsSet, boolean b) {
+	public static Term getTermContained(String term, Set<Term> termsSet) {
+
+		if (termsSet == null || termsSet.isEmpty()) {
+			return null;
+		}
+
+		List<Token> tokensTerm = NLPProcessor.getInstance().processText(term,
+				true);
+		for (Term bTerm : termsSet) {
+			if (term.toLowerCase().contains(bTerm.toString())) {
+				return bTerm;
+			}
+			boolean c = containsAllTakens(bTerm, tokensTerm);
+			if (c) {
+				return bTerm;
+			}
+		}
+
+		return null;
+	}
+
+	public static boolean isTermContained(String term, Set<Term> termsSet,
+			boolean b) {
 
 		if (termsSet == null || termsSet.isEmpty()) {
 			return b;
@@ -187,6 +209,9 @@ public class Utils {
 		List<Token> tokensTerm = NLPProcessor.getInstance().processText(term,
 				true);
 		for (Term bTerm : termsSet) {
+			if (term.toLowerCase().contains(bTerm.toString())) {
+				return true;
+			}
 			boolean c = containsAllTakens(bTerm, tokensTerm);
 			if (c) {
 				return c;

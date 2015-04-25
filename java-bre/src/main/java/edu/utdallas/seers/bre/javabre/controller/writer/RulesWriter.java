@@ -19,7 +19,7 @@ public class RulesWriter {
 
 	public RulesWriter(File file) throws IOException {
 		writer = new CSVWriter(new FileWriter(file), SEMI);
-		writer.writeNext(new String[] { "sep=" + SEMI });
+		// writer.writeNext(new String[] { "sep=" + SEMI });
 		writer.writeNext(header);
 	}
 

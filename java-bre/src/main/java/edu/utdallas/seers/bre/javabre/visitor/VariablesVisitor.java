@@ -30,8 +30,10 @@ public class VariablesVisitor extends ASTVisitor {
 
 	// pos -> [ lemma -> freq,statement ]
 	private HashMap<Term, HashMap<String, Set<VarBT>>> btMatches;
+	private Set<Term> sysTerms;
 
-	public VariablesVisitor() {
+	public VariablesVisitor(Set<Term> sysTerms2) {
+		this.sysTerms = sysTerms2;
 		setBtMatches(new HashMap<Term, HashMap<String, Set<VarBT>>>());
 	}
 
@@ -51,15 +53,15 @@ public class VariablesVisitor extends ASTVisitor {
 	}
 
 	private void findMatches(String identifier, SimpleName node) {
-		List<Token> tokens = NLPProcessor.getInstance().processText(identifier,
-				true);
 
-		for (Term bTerm : this.bTerms) {
+		boolean sys = Utils.isTermContained(identifier, sysTerms, false);
+		Term bTerm = Utils.getTermContained(identifier, bTerms);
 
-			boolean b = Utils.contains(bTerm, tokens);
-			if (!b) {
-				continue;
-			}
+		boolean invalid = sys || bTerm == null;
+
+		if (!invalid) {
+			List<Token> tokens = NLPProcessor.getInstance().processText(
+					identifier, true);
 
 			HashMap<String, Set<VarBT>> map = this.getBtMatches().get(bTerm);
 

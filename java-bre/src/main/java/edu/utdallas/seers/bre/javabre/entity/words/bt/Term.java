@@ -22,7 +22,14 @@ public class Term {
 
 	@Override
 	public String toString() {
-		return "Term [tokens=" + tokens + "]";
+		StringBuffer buf = new StringBuffer();
+		for (Token token : tokens) {
+			buf.append(token.getWord());
+			buf.append(" ");
+		}
+		int i = buf.lastIndexOf(" ");
+		buf.replace(i, i + 1, "");
+		return buf.toString();
 	}
 
 }

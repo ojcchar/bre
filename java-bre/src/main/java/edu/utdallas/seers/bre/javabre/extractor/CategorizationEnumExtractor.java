@@ -40,15 +40,15 @@ public class CategorizationEnumExtractor {
 		for (Entry<TypeDcl, List<TypeDeclaration>> entry : entrySet) {
 			TypeDcl superClass = entry.getKey();
 
-			// if (superClass.getType().equals(TypeDcl.TypeDclType.INTERFACE)) {
-			// continue;
-			// }
+			if (superClass.getType().equals(TypeDcl.TypeDclType.INTERFACE)) {
+				continue;
+			}
 
 			if (Utils.isInValidIdent(superClass.getName(), businessTerms,
 					this.sysTerms)) {
 				continue;
 			}
-			
+
 			List<TypeDeclaration> subClasses = entry.getValue();
 			if (subClasses.size() == 1) {
 				continue;

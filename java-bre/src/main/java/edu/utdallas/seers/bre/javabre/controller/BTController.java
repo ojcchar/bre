@@ -28,10 +28,12 @@ public class BTController {
 	private BTWriter writer;
 	private File inBtFile;
 	private String[] processFolders;
+	private Set<Term> sysTerms;
 
 	public BTController(String[] sourceFolders, String[] classPaths,
-			File inBtFile, File outFile, String[] processFolders)
+			File inBtFile, File outFile, String[] processFolders, File sysFile)
 			throws IOException {
+		sysTerms = Utils.readTermsFile(sysFile);
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
 		this.inBtFile = inBtFile;
@@ -42,7 +44,7 @@ public class BTController {
 			encodings[i] = "UTF-8";
 		}
 
-		astVisitor = new VariablesVisitor();
+		astVisitor = new VariablesVisitor(sysTerms);
 		this.writer = new BTWriter(outFile);
 	}
 
