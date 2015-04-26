@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class JavaFileInfo {
@@ -16,6 +18,8 @@ public class JavaFileInfo {
 	private List<TypeDeclaration> classes = new ArrayList<TypeDeclaration>();
 	private List<FieldDeclaration> constFields = new ArrayList<FieldDeclaration>();
 	private List<IfStatement> ifStmts = new ArrayList<IfStatement>();
+	private List<SwitchStatement> switchStmts = new ArrayList<SwitchStatement>();
+	private List<EnumDeclaration> enumStmts = new ArrayList<EnumDeclaration>();
 	private CompilationUnit cu;
 	
 	private List<MethodInvocation> methodInvoc=new ArrayList<MethodInvocation>();
@@ -74,4 +78,19 @@ public class JavaFileInfo {
 		this.methodInvoc = methodInvoc;
 	}
 
+	public List<SwitchStatement> getSwitchStmts() {
+		return this.switchStmts;
+	}
+
+	public void setSwitchStmts(List<SwitchStatement> switchStmts) {
+		this.switchStmts = switchStmts;
+	}
+	public List<EnumDeclaration> getEnumStmts() {
+		return this.enumStmts;
+	}
+
+	public void setEnumStmts(List<EnumDeclaration> enumStmts) {
+		this.enumStmts = enumStmts;
+	}
+	
 }

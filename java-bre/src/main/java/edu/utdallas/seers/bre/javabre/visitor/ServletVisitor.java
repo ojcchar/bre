@@ -23,6 +23,7 @@ public class ServletVisitor extends ASTVisitor {
 
 		Type superclType = node.getSuperclassType();
 
+		//FIXME: CHANGE TO FALSE, TRUE ONLY FOR TESTING PURPOSES
 		boolean isServlet = false;
 
 		// super class
