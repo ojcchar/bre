@@ -10,7 +10,9 @@ import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import edu.utdallas.seers.bre.javabre.controller.writer.RulesWriter;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
+import edu.utdallas.seers.bre.javabre.entity.words.Token;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 import edu.utdallas.seers.bre.javabre.visitor.IfCondVisitor;
@@ -94,7 +97,7 @@ public class ServletController {
 			return;
 		}
 
-		// LOGGER.info("Processing: " + file.getName());
+//		 LOGGER.info("Processing: " + file.getName());
 
 		char[] fileContent = Utils.readFile(file);
 		parser.setUnitName(file.getName());
@@ -119,25 +122,49 @@ public class ServletController {
 		JavaFileInfo fileInfo = astVisitor.getFileInfo();
 
 		if (fileInfo != null) {
-			List<IfStatement> ifStmts = fileInfo.getIfStmts();
+			List<MethodInvocation> methodInvoc = fileInfo.getMethodInvoc();
+			processMethodInv(methodInvoc);
 
-			for (IfStatement ifSt : ifStmts) {
+			// processIfs(file, fileInfo);
+		}
+	}
 
-				IfCondVisitor vis = new IfCondVisitor(businessTerms, sysTerms);
-				ifSt.getExpression().accept(vis);
+	private void processIfs(File file, JavaFileInfo fileInfo) {
+		List<IfStatement> ifStmts = fileInfo.getIfStmts();
 
-				if (!vis.isInv()) {
-					System.out.println("\""
-							+ file.getName()
-							+ "\";\""
-							+ ifSt.getExpression().toString()
-									.replace("\n", "\\n")
-							+ "\";\""
-							+ ifSt.getThenStatement().toString()
-									.replace("\n", "\\n") + "\"");
-				}
+		for (IfStatement ifSt : ifStmts) {
+
+			IfCondVisitor vis = new IfCondVisitor(businessTerms, sysTerms);
+			ifSt.getExpression().accept(vis);
+
+			if (!vis.isInv()) {
+				System.out.println("\""
+						+ file.getName()
+						+ "\";\""
+						+ ifSt.getExpression().toString().replace("\n", "\\n")
+						+ "\";\""
+						+ ifSt.getThenStatement().toString()
+								.replace("\n", "\\n") + "\"");
 			}
 		}
+	}
+
+	private void processMethodInv(List<MethodInvocation> methodInvoc) {
+
+		for (MethodInvocation mInv : methodInvoc) {
+			IMethodBinding bind = mInv.resolveMethodBinding();
+			String clName = bind.getDeclaringClass().getName();
+			
+			String t1 = Utils.getNLText(clName);
+			List<Token> tokensTerm = NLPProcessor.getInstance().processText(mInv.getName().toString(), true);
+			if (tokensTerm.get(0).getPos().startsWith("V")) {
+				
+				String t2 = Utils.getNLTokens(tokensTerm);
+				
+				System.out.println(t1 + " " + t2);
+			}
+		}
+
 	}
 
 	public void close() throws IOException {
