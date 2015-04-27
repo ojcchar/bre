@@ -2,7 +2,9 @@ package edu.utdallas.seers.bre.javabre.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +13,6 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
@@ -23,8 +24,8 @@ import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
 import edu.utdallas.seers.bre.javabre.entity.words.Token;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
-import edu.utdallas.seers.bre.javabre.visitor.IfCondVisitor;
 import edu.utdallas.seers.bre.javabre.visitor.ServletVisitor;
+import edu.utdallas.seers.bre.javabre.visitor.ServletVisitor2;
 
 public class ServletController {
 
@@ -63,12 +64,20 @@ public class ServletController {
 
 		for (String srcFolder : processFolders) {
 			File folder = new File(srcFolder);
-			processFolder(parser, folder);
+			processFolder(parser, folder, true);
+		}
+
+		System.out
+				.println("-----------------------------------------------------");
+
+		for (String srcFolder : processFolders) {
+			File folder = new File(srcFolder);
+			processFolder(parser, folder, false);
 		}
 
 	}
 
-	private void processFolder(ASTParser parser, File folder)
+	private void processFolder(ASTParser parser, File folder, boolean procServ)
 			throws IOException {
 
 		if (!folder.isDirectory()) {
@@ -81,15 +90,16 @@ public class ServletController {
 
 		for (File file : listFiles) {
 			if (file.isDirectory()) {
-				processFolder(parser, file);
+				processFolder(parser, file, procServ);
 			} else {
-				processFile(parser, file);
+				processFile(parser, file, procServ);
 			}
 		}
 
 	}
 
-	private void processFile(ASTParser parser, File file) throws IOException {
+	private void processFile(ASTParser parser, File file, boolean procServ)
+			throws IOException {
 
 		if (!file.getName().endsWith(".java")) {
 			// LOGGER.warn("The file " + file
@@ -97,7 +107,7 @@ public class ServletController {
 			return;
 		}
 
-//		 LOGGER.info("Processing: " + file.getName());
+		// LOGGER.info("Processing: " + file.getName());
 
 		char[] fileContent = Utils.readFile(file);
 		parser.setUnitName(file.getName());
@@ -117,51 +127,94 @@ public class ServletController {
 		}
 		// ---------------------
 
-		ServletVisitor astVisitor = new ServletVisitor();
-		cu.accept(astVisitor);
-		JavaFileInfo fileInfo = astVisitor.getFileInfo();
+		JavaFileInfo fileInfo = null;
+		if (procServ) {
+			ServletVisitor astVisitor = new ServletVisitor();
+			cu.accept(astVisitor);
+			fileInfo = astVisitor.getFileInfo();
+			if (fileInfo != null) {
+				List<MethodInvocation> methodInvoc = fileInfo.getMethodInvoc();
+				processMethodInv(methodInvoc, file, procServ);
 
-		if (fileInfo != null) {
-			List<MethodInvocation> methodInvoc = fileInfo.getMethodInvoc();
-			processMethodInv(methodInvoc);
-
-			// processIfs(file, fileInfo);
-		}
-	}
-
-	private void processIfs(File file, JavaFileInfo fileInfo) {
-		List<IfStatement> ifStmts = fileInfo.getIfStmts();
-
-		for (IfStatement ifSt : ifStmts) {
-
-			IfCondVisitor vis = new IfCondVisitor(businessTerms, sysTerms);
-			ifSt.getExpression().accept(vis);
-
-			if (!vis.isInv()) {
-				System.out.println("\""
-						+ file.getName()
-						+ "\";\""
-						+ ifSt.getExpression().toString().replace("\n", "\\n")
-						+ "\";\""
-						+ ifSt.getThenStatement().toString()
-								.replace("\n", "\\n") + "\"");
+				// processIfs(file, fileInfo);
+			}
+		} else {
+			ServletVisitor2 astVisitor = new ServletVisitor2(clsMethods);
+			cu.accept(astVisitor);
+			fileInfo = astVisitor.getFileInfo();
+			if (fileInfo != null) {
+				List<MethodInvocation> methodInvoc = fileInfo.getMethodInvoc();
+				processMethodInv(methodInvoc, file, procServ);
+				// processIfs(file, fileInfo);
 			}
 		}
 	}
 
-	private void processMethodInv(List<MethodInvocation> methodInvoc) {
+	// private void processIfs(File file, JavaFileInfo fileInfo) {
+	// List<IfStatement> ifStmts = fileInfo.getIfStmts();
+	//
+	// for (IfStatement ifSt : ifStmts) {
+	//
+	// IfCondVisitor vis = new IfCondVisitor(businessTerms, sysTerms);
+	// ifSt.getExpression().accept(vis);
+	//
+	// if (!vis.isInv()) {
+	// System.out.println("\""
+	// + file.getName()
+	// + "\";\""
+	// + ifSt.getExpression().toString().replace("\n", "\\n")
+	// + "\";\""
+	// + ifSt.getThenStatement().toString()
+	// .replace("\n", "\\n") + "\"");
+	// }
+	// }
+	// }
+
+	HashSet<String> texts = new HashSet<String>();
+	HashMap<String, List<String>> clsMethods = new HashMap<String, List<String>>();
+
+	private void processMethodInv(List<MethodInvocation> methodInvoc,
+			File file, boolean procServ) {
 
 		for (MethodInvocation mInv : methodInvoc) {
 			IMethodBinding bind = mInv.resolveMethodBinding();
+
+			String qualifiedName = bind.getDeclaringClass().getQualifiedName();
+			if (qualifiedName.startsWith("java.")) {
+				continue;
+			}
+
 			String clName = bind.getDeclaringClass().getName();
-			
-			String t1 = Utils.getNLText(clName);
-			List<Token> tokensTerm = NLPProcessor.getInstance().processText(mInv.getName().toString(), true);
-			if (tokensTerm.get(0).getPos().startsWith("V")) {
-				
+
+			if (file.getName().endsWith(clName + ".java")) {
+				continue;
+			}
+			// if (Utils.isTermContained(clName, sysTerms, false)) {
+			if (Utils.isInValidIdent(clName, businessTerms, sysTerms)) {
+				continue;
+			}
+
+			String t1 = Utils.bracketizeStr(Utils.getNLText(clName));
+			List<Token> tokensTerm = NLPProcessor.getInstance().processText(
+					mInv.getName().toString(), true);
+			if (tokensTerm.get(0).getPos().startsWith("V")
+					&& (!tokensTerm.get(0).getWord().startsWith("set") && !tokensTerm
+							.get(0).getWord().startsWith("get"))) {
+
 				String t2 = Utils.getNLTokens(tokensTerm);
-				
-				System.out.println(t1 + " " + t2);
+				String text = t1 + " " + t2;
+
+				if (texts.add(text)) {
+					if (procServ) {
+						List<String> list = clsMethods.get(qualifiedName);
+						if (list == null) {
+							list = new ArrayList<String>();
+							clsMethods.put(qualifiedName, list);
+						}
+						list.add(mInv.getName().toString());
+					}
+					System.out.println(file.getName() + ";" + text);
+				}
 			}
 		}
 

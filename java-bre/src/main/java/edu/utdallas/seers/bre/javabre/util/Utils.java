@@ -226,7 +226,8 @@ public class Utils {
 		boolean sys = Utils.isTermContained(term, sysTerms, false);
 		boolean bus = Utils.isTermContained(term, businessTerms, true);
 		// return sys && !bus;
-		boolean invalid = sys || !bus;
+		boolean invalid = sys && !bus;
+		// boolean invalid = sys || !bus;
 		return invalid;
 
 	}
