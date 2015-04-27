@@ -64,7 +64,7 @@ public class IfElseIfExtractor implements RuleExtractor {
 				String val2 = "[";
 				LinkedList<String> ll = values.get(key);
 				for(int i = 0; i < ll.size(); i++){
-					if(i+1 < ll.size()){
+					if((i+1) < ll.size()){
 						val2 += ll.get(i) + ", ";
 					}else{
 						val2 += ll.get(i) + "]";
@@ -74,7 +74,7 @@ public class IfElseIfExtractor implements RuleExtractor {
 				String brText = Utils.replaceTemplate(TEMPLATE, new String[] {
 						Utils.bracketizeStr(key), val2 });
 				BusinessRule rule = new BusinessRule(brText,
-						BusinessRule.RuleType.VALID_VALUE);
+						BusinessRule.RuleType.CATEG_ENUMERATION);
 				rule.addLocation(info.getFile(), lineNo.get(key));
 				rules.add(rule);
 			}
@@ -88,7 +88,15 @@ public class IfElseIfExtractor implements RuleExtractor {
 		//Case 1
 		if(expression instanceof MethodInvocation){
 			MethodInvocation mi = (MethodInvocation) expression;
-			String name = mi.getExpression().toString();
+			String name = "";
+			try{
+				name = mi.getExpression().toString();
+				if (Utils.isInValidIdent(name, businessTerms, this.sysTerms)) {
+					return;
+				}
+			}catch(NullPointerException e){
+				return;
+			}
 			List<Expression> args = mi.arguments();
 			for(Expression arg : args){
 				if(arg instanceof NumberLiteral ||
@@ -119,6 +127,9 @@ public class IfElseIfExtractor implements RuleExtractor {
 							ie.getRightOperand() instanceof CharacterLiteral ||
 							ie.getRightOperand() instanceof StringLiteral)){
 				String name = ie.getLeftOperand().toString();
+				if (Utils.isInValidIdent(name, businessTerms, this.sysTerms)) {
+					return;
+				}
 				if(!values.containsKey(name)){
 					LinkedList<String> ll = new LinkedList<String>();
 					ll.add(ie.getRightOperand().toString());
@@ -136,6 +147,9 @@ public class IfElseIfExtractor implements RuleExtractor {
 							ie.getLeftOperand() instanceof CharacterLiteral ||
 							ie.getLeftOperand() instanceof StringLiteral)){
 				String name = ie.getRightOperand().toString();
+				if (Utils.isInValidIdent(name, businessTerms, this.sysTerms)) {
+					return;
+				}
 				if(!values.containsKey(name)){
 					LinkedList<String> ll = new LinkedList<String>();
 					ll.add(ie.getRightOperand().toString());

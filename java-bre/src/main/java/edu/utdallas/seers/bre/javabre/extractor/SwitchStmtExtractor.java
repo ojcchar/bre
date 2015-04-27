@@ -73,12 +73,12 @@ public class SwitchStmtExtractor implements RuleExtractor {
 					}
 				}
 				
-				String brText = Utils.replaceTemplate(TEMPLATE, new String[] {
-						Utils.bracketizeStr(term1), cases });
+				String brText = Utils.replaceTemplate(TEMPLATE, 
+						new String[] { Utils.bracketizeStr(term1), cases });
 
 				CompilationUnit cu = info.getCompilUnit();
 				BusinessRule rule = new BusinessRule(brText,
-						BusinessRule.RuleType.SYMBOL_LITERAL);
+						BusinessRule.RuleType.CATEG_ENUMERATION);
 
 				rule.addLocation(info.getFile(),
 						cu.getLineNumber(constField.getStartPosition()));

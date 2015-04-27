@@ -70,7 +70,7 @@ public class EnumExtractor implements RuleExtractor {
 
 				CompilationUnit cu = info.getCompilUnit();
 				BusinessRule rule = new BusinessRule(brText,
-						BusinessRule.RuleType.SYMBOL_LITERAL);
+						BusinessRule.RuleType.CATEG_ENUMERATION);
 
 				rule.addLocation(info.getFile(),
 						cu.getLineNumber(constField.getStartPosition()));
