@@ -1,6 +1,7 @@
 package edu.utdallas.seers.bre.javabre.visitor;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -56,6 +57,13 @@ public class GeneralVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 
+	@Override
+	public boolean visit(EnumDeclaration node) {
+		fileInfo.getEnumStmts().add(node);
+		
+		return super.visit(node);
+	}
+	
 	public JavaFileInfo getFileInfo() {
 		return fileInfo;
 	}

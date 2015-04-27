@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -19,13 +21,13 @@ import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 
-public class SwitchStmtExtractor implements RuleExtractor {
+public class EnumExtractor implements RuleExtractor {
 
 	private Set<Term> businessTerms;
 	private Set<Term> sysTerms;
 	final String TEMPLATE = "A {0} is by definition one of the following: {1}";
 
-	public SwitchStmtExtractor(Set<Term> businessTerms, Set<Term> sysTerms) {
+	public EnumExtractor(Set<Term> businessTerms, Set<Term> sysTerms) {
 		this.businessTerms = businessTerms;
 		this.sysTerms = sysTerms;
 	}
@@ -33,13 +35,13 @@ public class SwitchStmtExtractor implements RuleExtractor {
 	@SuppressWarnings({ "rawtypes" })
 	public List<BusinessRule> extract(JavaFileInfo info) {
 		
-		List<SwitchStatement> constFields = info.getSwitchStmts();
+		List<EnumDeclaration> constFields = info.getEnumStmts();
 		List<BusinessRule> rules = new ArrayList<BusinessRule>();
 
 
-		for (SwitchStatement constField : constFields) {
+		for (EnumDeclaration constField : constFields) {
 			try {
-				String term1 = constField.getExpression().toString();
+				String term1 = constField.getName().toString();
 
 				if ("serialVersionUID".equalsIgnoreCase(term1)) {
 					continue;
@@ -51,25 +53,15 @@ public class SwitchStmtExtractor implements RuleExtractor {
 				
 				//parse case statements
 				String cases = "[";
-				List switchCases = constField.statements();
-				for(int i = 0; i < switchCases.size(); i++){
-					SwitchCase vdf;
-					try{
-						vdf = (SwitchCase)switchCases.get(i);
-					}catch(Exception e){
-						continue;
-					}
-					String ss = "";
-					try{
-						ss = vdf.getExpression().toString();
-					}catch(Exception e){
-						ss = "default";
-					}
+				List enumCases = constField.enumConstants();
+				for(int i = 0; i < enumCases.size(); i++){
 					
-					if((i+1) < switchCases.size()){
-						cases += ss + ", ";
+					EnumConstantDeclaration ec = (EnumConstantDeclaration) enumCases.get(i);
+					
+					if((i+1) < enumCases.size()){
+						cases += ec.getName().toString() + ", ";
 					}else{
-						cases += ss + "]";
+						cases += ec.getName().toString() + "]";
 					}
 				}
 				

@@ -199,8 +199,7 @@ public class Utils {
 		return null;
 	}
 
-	public static boolean isTermContained(String term, Set<Term> termsSet,
-			boolean b) {
+	public static boolean isTermContained(String term, Set<Term> termsSet, boolean b) {
 
 		if (termsSet == null || termsSet.isEmpty()) {
 			return b;
