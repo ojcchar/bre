@@ -13,7 +13,6 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
@@ -25,7 +24,6 @@ import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
 import edu.utdallas.seers.bre.javabre.entity.words.Token;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
-import edu.utdallas.seers.bre.javabre.visitor.IfCondVisitor;
 import edu.utdallas.seers.bre.javabre.visitor.ServletVisitor;
 import edu.utdallas.seers.bre.javabre.visitor.ServletVisitor2;
 
@@ -147,31 +145,30 @@ public class ServletController {
 			if (fileInfo != null) {
 				List<MethodInvocation> methodInvoc = fileInfo.getMethodInvoc();
 				processMethodInv(methodInvoc, file, procServ);
-
 				// processIfs(file, fileInfo);
 			}
 		}
 	}
 
-	private void processIfs(File file, JavaFileInfo fileInfo) {
-		List<IfStatement> ifStmts = fileInfo.getIfStmts();
-
-		for (IfStatement ifSt : ifStmts) {
-
-			IfCondVisitor vis = new IfCondVisitor(businessTerms, sysTerms);
-			ifSt.getExpression().accept(vis);
-
-			if (!vis.isInv()) {
-				System.out.println("\""
-						+ file.getName()
-						+ "\";\""
-						+ ifSt.getExpression().toString().replace("\n", "\\n")
-						+ "\";\""
-						+ ifSt.getThenStatement().toString()
-								.replace("\n", "\\n") + "\"");
-			}
-		}
-	}
+	// private void processIfs(File file, JavaFileInfo fileInfo) {
+	// List<IfStatement> ifStmts = fileInfo.getIfStmts();
+	//
+	// for (IfStatement ifSt : ifStmts) {
+	//
+	// IfCondVisitor vis = new IfCondVisitor(businessTerms, sysTerms);
+	// ifSt.getExpression().accept(vis);
+	//
+	// if (!vis.isInv()) {
+	// System.out.println("\""
+	// + file.getName()
+	// + "\";\""
+	// + ifSt.getExpression().toString().replace("\n", "\\n")
+	// + "\";\""
+	// + ifSt.getThenStatement().toString()
+	// .replace("\n", "\\n") + "\"");
+	// }
+	// }
+	// }
 
 	HashSet<String> texts = new HashSet<String>();
 	HashMap<String, List<String>> clsMethods = new HashMap<String, List<String>>();
@@ -218,7 +215,6 @@ public class ServletController {
 					}
 					System.out.println(file.getName() + ";" + text);
 				}
-
 			}
 		}
 
