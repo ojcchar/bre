@@ -15,7 +15,7 @@ public class BusinessRule {
 	private RuleType type;
 
 	public enum RuleType {
-		SYMBOL_LITERAL, CATEG_ENUMERATION, VALID_VALUE
+		SYMBOL_LITERAL, CATEG_ENUMERATION, VALID_VALUE, ACTIVITY_PRECOND
 	}
 
 	public BusinessRule(String brText, RuleType type) {

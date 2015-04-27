@@ -3,6 +3,7 @@ package edu.utdallas.seers.bre.javabre.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,15 +11,19 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.utdallas.seers.bre.javabre.controller.writer.RulesWriter;
+import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
+import edu.utdallas.seers.bre.javabre.entity.BusinessRule.RuleType;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
 import edu.utdallas.seers.bre.javabre.entity.TypeDcl;
 import edu.utdallas.seers.bre.javabre.entity.words.Token;
@@ -134,7 +139,7 @@ public class ServletController {
 			fileInfo = astVisitor.getFileInfo();
 			if (fileInfo != null) {
 				List<MethodInvocation> methodInvoc = fileInfo.getMethodInvoc();
-				processMethodInv(methodInvoc, file, procServ);
+				processMethodInv(methodInvoc, file, procServ, fileInfo, cu);
 
 				// processIfs(file, fileInfo);
 			}
@@ -144,7 +149,7 @@ public class ServletController {
 			fileInfo = astVisitor.getFileInfo();
 			if (fileInfo != null) {
 				List<MethodInvocation> methodInvoc = fileInfo.getMethodInvoc();
-				processMethodInv(methodInvoc, file, procServ);
+				processMethodInv(methodInvoc, file, procServ, fileInfo, cu);
 				// processIfs(file, fileInfo);
 			}
 		}
@@ -174,7 +179,8 @@ public class ServletController {
 	HashMap<String, List<String>> clsMethods = new HashMap<String, List<String>>();
 
 	private void processMethodInv(List<MethodInvocation> methodInvoc,
-			File file, boolean procServ) {
+			File file, boolean procServ, JavaFileInfo fileInfo,
+			CompilationUnit cu) {
 
 		for (MethodInvocation mInv : methodInvoc) {
 			IMethodBinding bind = mInv.resolveMethodBinding();
@@ -198,6 +204,7 @@ public class ServletController {
 			List<Token> tokensTerm = NLPProcessor.getInstance().processText(
 					mInv.getName().toString(), true);
 			if (tokensTerm.get(0).getPos().startsWith("V")
+					&& !tokensTerm.get(0).getWord().equals("is")
 					&& (!tokensTerm.get(0).getWord().startsWith("set") && !tokensTerm
 							.get(0).getWord().startsWith("get"))) {
 
@@ -205,6 +212,54 @@ public class ServletController {
 				String text = t1 + " " + t2;
 
 				if (texts.add(text)) {
+
+					// -------------------------------------------------------
+
+					List<IfStatement> ifStmts2 = getIfStmts(mInv);
+
+					for (IfStatement ifSt : ifStmts2) {
+						String bText = text + " if [" + ifSt.getExpression()
+								+ "]";
+						BusinessRule rule = new BusinessRule(bText,
+								RuleType.ACTIVITY_PRECOND);
+						rule.addLocation(file,
+								cu.getLineNumber(ifSt.getStartPosition()));
+
+						System.out
+								.println(Arrays.toString(rule.toStringArray()));
+					}
+
+					// -------------------------------------------------------
+					//
+					// List<IfStatement> ifStmts = fileInfo.getIfStmts();
+					//
+					// String mInvStrNoPunct = mInv.toString().replaceAll(
+					// "[^a-zA-Z ]", " ");
+					// List<Token> tokens = NLPProcessor.getInstance()
+					// .processText(mInvStrNoPunct, true);
+					// int lineNumber =
+					// cu.getLineNumber(mInv.getStartPosition());
+					// for (IfStatement ifSt : ifStmts) {
+					// MethodInvVisitor vis = new MethodInvVisitor(tokens, cu,
+					// lineNumber, mInv);
+					// ifSt.accept(vis);
+					// boolean b = vis.doesDependOnIf();
+					//
+					// if (b) {
+					// String bText = text + " if ["
+					// + ifSt.getExpression() + "]";
+					// BusinessRule rule = new BusinessRule(bText,
+					// RuleType.ACTIVITY_PRECOND);
+					// rule.addLocation(file,
+					// cu.getLineNumber(ifSt.getStartPosition()));
+					//
+					// System.out.println(Arrays.toString(rule
+					// .toStringArray()));
+					// }
+					// }
+
+					// MethodInvVisitor vis = new MethodInvVisitor(mInv, );
+
 					if (procServ) {
 						List<String> list = clsMethods.get(qualifiedName);
 						if (list == null) {
@@ -213,11 +268,33 @@ public class ServletController {
 						}
 						list.add(mInv.getName().toString());
 					}
-					System.out.println(file.getName() + ";" + text);
+					// System.out.println(file.getName() + ";" + text);
 				}
 			}
 		}
 
+	}
+
+	private List<IfStatement> getIfStmts(MethodInvocation mInv) {
+		ASTNode parent = mInv.getParent();
+
+		ArrayList<IfStatement> arrayList = new ArrayList<IfStatement>();
+		getIfStmts(parent, arrayList);
+
+		return arrayList;
+	}
+
+	private void getIfStmts(ASTNode node, ArrayList<IfStatement> arrayList) {
+
+		if (node == null) {
+			return;
+		}
+
+		if (node instanceof IfStatement) {
+			arrayList.add((IfStatement) node);
+		}
+
+		getIfStmts(node.getParent(), arrayList);
 	}
 
 	public void close() throws IOException {

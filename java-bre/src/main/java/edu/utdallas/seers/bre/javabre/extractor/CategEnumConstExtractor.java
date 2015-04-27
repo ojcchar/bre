@@ -21,7 +21,7 @@ public class CategEnumConstExtractor implements RuleExtractor {
 
 	// private static final String TEMPLATE =
 	// "The {0} of a {1} is by definition one of the following: {2}.";
-	private static final String TEMPLATE = "The {0} is by definition one of the following: {2}.";
+	private static final String TEMPLATE = "A {0} is by definition one of the following: {2}.";
 	private Set<Term> sysTerms;
 	private Set<Term> businessTerms;
 	private List<FieldDeclaration> constsRules = new ArrayList<FieldDeclaration>();
