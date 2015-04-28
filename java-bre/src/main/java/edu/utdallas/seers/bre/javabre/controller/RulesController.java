@@ -25,7 +25,6 @@ import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.extractor.CategEnumConstExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.CategorizationEnumExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.EnumExtractor;
-import edu.utdallas.seers.bre.javabre.extractor.IfElseIfExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.RuleExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.SwitchStmtExtractor;
 import edu.utdallas.seers.bre.javabre.extractor.SymbolicLiteralExtractor;
@@ -137,38 +136,21 @@ public class RulesController {
 		fileInfo.setCompilUnit(cu);
 
 		updateHierarchy(fileInfo);
-//
-//		CategEnumConstExtractor extractor2 = new CategEnumConstExtractor(
-//				businessTerms, sysTerms);
-//		List<BusinessRule> rules3 = extractor2.extract(fileInfo);
-//		writer.writeRules(rules3);
-//
-//		RuleExtractor extractor = new SymbolicLiteralExtractor(businessTerms,
-//				sysTerms, extractor2.getConstsRules());
-//		List<BusinessRule> rules = extractor.extract(fileInfo);
-//		writer.writeRules(rules);
-//
-//		extractor = new ValidValExtractor(businessTerms, sysTerms);
-//		List<BusinessRule> rules2 = extractor.extract(fileInfo);
-//		// System.out.println(rules2);
-//		writer.writeRules(rules2);
-//
-//	}
-		RuleExtractor extractor;
-		
-//		RuleExtractor extractor = new SymbolicLiteralExtractor(businessTerms, sysTerms);
-//		List<BusinessRule> rules = extractor.extract(fileInfo);
-//		writer.writeRules(rules);
-//
-//		extractor = new ValidValExtractor(businessTerms, sysTerms);
-//		List<BusinessRule> rules2 = extractor.extract(fileInfo);
-//		// System.out.println(rules2);
-//		writer.writeRules(rules2);
-//		
-//		extractor = new CategEnumConstExtractor();
-//		List<BusinessRule> rules3 = extractor.extract(fileInfo);
-//		writer.writeRules(rules3);
-		
+
+		CategEnumConstExtractor extractor2 = new CategEnumConstExtractor(
+				businessTerms, sysTerms);
+		List<BusinessRule> rules3 = extractor2.extract(fileInfo);
+		writer.writeRules(rules3);
+
+		RuleExtractor extractor = new SymbolicLiteralExtractor(businessTerms,
+				sysTerms, extractor2.getConstsRules());
+		List<BusinessRule> rules = extractor.extract(fileInfo);
+		writer.writeRules(rules);
+
+		extractor = new ValidValExtractor(businessTerms, sysTerms);
+		List<BusinessRule> rules2 = extractor.extract(fileInfo);
+		writer.writeRules(rules2);
+
 		extractor = new SwitchStmtExtractor(businessTerms, sysTerms);
 		List<BusinessRule> rules4 = extractor.extract(fileInfo);
 		writer.writeRules(rules4);
@@ -176,12 +158,12 @@ public class RulesController {
 		extractor = new EnumExtractor(businessTerms, sysTerms);
 		List<BusinessRule> rules5 = extractor.extract(fileInfo);
 		writer.writeRules(rules5);
-		
-		extractor = new IfElseIfExtractor(businessTerms, sysTerms);
-		List<BusinessRule> rules6 = extractor.extract(fileInfo);
-		writer.writeRules(rules6);	
+
+		// extractor = new IfElseIfExtractor(businessTerms, sysTerms);
+		// List<BusinessRule> rules6 = extractor.extract(fileInfo);
+		// writer.writeRules(rules6);
 	}
-	
+
 	@SuppressWarnings({ "unchecked" })
 	private void updateHierarchy(JavaFileInfo fileInfo) {
 

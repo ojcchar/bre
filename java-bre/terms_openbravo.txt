@@ -1,4 +1,5 @@
 accounting
+acct
 asset
 audit
 balance
@@ -21,6 +22,8 @@ debt
 delivery
 devolution
 discount
+document
+email address
 employee
 exchange rate
 financial
@@ -55,6 +58,7 @@ shipment
 stock
 suborganization
 tax
+trx
 warehouse
 work center
 work requirement

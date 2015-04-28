@@ -1,31 +1,46 @@
+access level
 activation
 android
 apache
+app
 applet
 array
+async
 attribute value
 binary
+blob
 boolean
 border size 
 browser
 button
+cache
 class
 clause
 column
+command
+commit
 comparator
 component
+config file
+configuration file
+constraint
+content type
 counter
+cron
 css
 dao
 data
 data source
+data type
 database
 db
 dbms
 debug
+display
 double
 entity
 entity name
+error
 error code
 event
 exception
@@ -34,8 +49,10 @@ factory
 field
 file system
 filter
+flag
 float
 foreign key
+group by
 gui
 handler
 heartbeat
@@ -44,19 +61,25 @@ hql
 html
 http
 https
+hyperlink
+image
 image selector
 index
 initializer
 insertion
 integer
+iteration
 jasper
 java
 javascript
 js
+jsessionid
 json
+label
 license
 linux
 listener
+log level
 log4j
 logger
 login
@@ -65,14 +88,20 @@ macos
 md5
 menu
 microsoft
+millis
 mime
 mobile
 module
 module dependency
+msg
 mysql
+nesting
 null
 observer
 oracle
+order by
+padding
+param
 parameter
 persistence
 pixel
@@ -80,12 +109,21 @@ popup
 postgres
 postgresql
 primitive type
+private key
+properties file
 property
+public key
 rdbms
+request header
+response header
+result
+result set
+rollback
 row
 rpc
 runner
 schema
+screen
 scroll
 server
 servlet
@@ -95,24 +133,33 @@ singleton
 skin
 sl4j
 software
+sort
+span
 sql
 string
 swing
+sync
 system information
 system key
 tab
 table
+table id
 table name
 test
+text area
+textarea
 theme 
 thread
+tmp
 tomcat
 toolbar
 ui
+unique constraint
 url
 utility
 utils
 validator
+variable
 version
 version number
 web service
@@ -120,5 +167,6 @@ widget
 window
 www
 xml
+xsd
 false
 true

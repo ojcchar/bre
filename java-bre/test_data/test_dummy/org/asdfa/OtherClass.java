@@ -17,8 +17,6 @@ public class OtherClass {
 		default:
 		}
 		
-		return -1;
-		
 		String val1 = "oranges";
 		String val2 = "grass";
 		
@@ -41,6 +39,7 @@ public class OtherClass {
 			y = 10;
 		}
 		
+		return 0;
 	}
 
 }
