@@ -39,7 +39,7 @@ pallet
 payment
 period
 planner
-pos
+point of sale
 postal code 
 price
 price list
@@ -55,6 +55,7 @@ salary
 sale
 settlement 
 shipment
+status
 stock
 suborganization
 tax

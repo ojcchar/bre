@@ -14,19 +14,29 @@ public class SubClass1 extends SuperClass implements SuperInterface {
 	private Day day;
 	private static final String[] colNames = { "documentno", "businesspartner",
 			"description", "duedate", "amount", "rowkey" };// ArrayInitializer
-	public static final String CONSTANT_VAL2 = new String("3");//classinstancecreation
-	private static final long milisecDayConv = (1000 * 60 * 60 * 24); //Infix expression
+	public static final String CONSTANT_VAL2 = new String("3");// classinstancecreation
+	private static final long milisecDayConv = (1000 * 60 * 60 * 24); // Infix
+																		// expression
+
+	public static final String status_posted = "Y";
+	public static final String status_error = "E";
+	public static final String status_invalidcost = "C";
+	public static final String status_notcalculatedcost = "NC";
+	public static final String status_norelatedpo = "NO";
+	public static final String status_documentlocked = "L";
+	public static final String status_documentdisabled = "D";
+	public static final String status_tabledisabled = "T";
+	public static final String status_backgrounddisabled = "d";
+	public static final String status_noaccountingdate = "AD";
+
+	public static final String OSCAR_CODE = "OSCAR_CODE";
+	public final static String resourceError = "AccountingErrorUiLabels";
+
+	public static final String STATUS_CLEARED = "RPPC";
+	public static final String STATUS_DEPOSIT = "RDNC";
+	public static final String STATUS_WITHDRAWN = "PWNC";
 	
-	public static final String status_posted ="Y";
-	public static final String status_error ="E";
-	public static final String status_invalidcost ="C";
-	public static final String status_notcalculatedcost ="NC";
-	public static final String status_norelatedpo ="NO";
-	public static final String status_documentlocked ="L";
-	public static final String status_documentdisabled ="D";
-	public static final String status_tabledisabled ="T";
-	public static final String status_backgrounddisabled ="d";
-	public static final String status_noaccountingdate ="AD";
+	public static final String IsAcctDimCentrally = "$IsAcctDimCentrally";
 
 	public enum Day {
 		SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY

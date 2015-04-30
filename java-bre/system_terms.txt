@@ -10,7 +10,8 @@ attribute value
 binary
 blob
 boolean
-border size 
+border size
+border
 browser
 button
 cache
@@ -38,6 +39,7 @@ dbms
 debug
 display
 double
+ebay
 entity
 entity name
 error
@@ -52,10 +54,13 @@ filter
 flag
 float
 foreign key
+gateway
+google
 group by
 gui
 handler
 heartbeat
+height
 hibernate
 hql
 html
@@ -72,6 +77,7 @@ iteration
 jasper
 java
 javascript
+jpos
 js
 jsessionid
 json
@@ -105,6 +111,8 @@ param
 parameter
 persistence
 pixel
+poller
+polling
 popup
 postgres
 postgresql
@@ -116,8 +124,8 @@ public key
 rdbms
 request header
 response header
-result
 result set
+rita api
 rollback
 row
 rpc
@@ -133,10 +141,11 @@ singleton
 skin
 sl4j
 software
-sort
 span
 sql
+src
 string
+style
 swing
 sync
 system information
@@ -164,6 +173,7 @@ version
 version number
 web service
 widget
+width
 window
 www
 xml

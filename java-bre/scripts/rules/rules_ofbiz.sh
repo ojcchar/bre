@@ -13,4 +13,5 @@ export SYS_TERMS=/home/Oscar/Documents/Workspaces/bre/java-bre/system_terms.txt
 echo Executing the BRE program...
 /home/Oscar/Documents/jdk1.8.0_25/bin/java $MAIN_CLASS_RULES $SOURCES_TGT_SYSTEM $SOURCES_TGT_SYSTEM $CLASSPATH_TGT_SYSTEM $TERMS $SYS_TERMS $OUT_FILE
 
+#echo "/home/Oscar/Documents/jdk1.8.0_25/bin/java $MAIN_CLASS_RULES $SOURCES_TGT_SYSTEM $SOURCES_TGT_SYSTEM $CLASSPATH_TGT_SYSTEM $TERMS $SYS_TERMS $OUT_FILE" > command_ofbiz.txt
 

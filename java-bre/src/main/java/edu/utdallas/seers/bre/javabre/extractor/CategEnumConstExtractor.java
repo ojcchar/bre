@@ -161,9 +161,9 @@ public class CategEnumConstExtractor implements RuleExtractor {
 		return btText;
 	}
 
-	private String[] getValues(String subStr, List<FieldDeclaration> consts) {
+	private String[] getValues(String categStr, List<FieldDeclaration> consts) {
 
-		String term0 = Utils.bracketizeStr(subStr);
+		String term0 = Utils.bracketizeStr(categStr);
 
 		VariableDeclarationFragment a = ((VariableDeclarationFragment) consts
 				.get(0).fragments().get(0));
@@ -177,9 +177,13 @@ public class CategEnumConstExtractor implements RuleExtractor {
 					.get(0)).getName();
 
 			String subName = clName.toString();
-			subName = subName.replace(subStr, "");
-			buf.append(Utils.bracketizeStr(subName));
-			buf.append(COMMA);
+			if (subName.contains(categStr)) {
+				subName = subName.replace(categStr, "");
+				if (!subName.isEmpty()) {
+					buf.append(Utils.bracketizeStr(subName));
+					buf.append(COMMA);
+				}
+			}
 		}
 
 		int lastIndexOf = buf.lastIndexOf(COMMA);
@@ -288,10 +292,6 @@ public class CategEnumConstExtractor implements RuleExtractor {
 
 	public List<FieldDeclaration> getConstsRules() {
 		return constsRules;
-	}
-
-	public void setConstsRules(List<FieldDeclaration> constsRules) {
-		this.constsRules = constsRules;
 	}
 
 }

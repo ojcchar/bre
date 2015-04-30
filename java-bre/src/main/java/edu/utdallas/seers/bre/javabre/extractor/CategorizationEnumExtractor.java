@@ -50,6 +50,7 @@ public class CategorizationEnumExtractor {
 			}
 
 			List<TypeDeclaration> subClasses = entry.getValue();
+			// TODO: this check might remove true positives
 			if (subClasses.size() == 1) {
 				continue;
 			}

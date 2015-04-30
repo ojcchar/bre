@@ -41,6 +41,10 @@ public class SwitchStmtExtractor implements RuleExtractor {
 			List switchCases = swStmt.statements();
 			String[] values = getValues(term1, switchCases);
 
+			if (values == null) {
+				continue;
+			}
+
 			String brText = Utils.replaceTemplate(TEMPLATE, values);
 
 			CompilationUnit cu = info.getCompilUnit();
@@ -65,6 +69,7 @@ public class SwitchStmtExtractor implements RuleExtractor {
 
 		final String COMMA = ", ";
 		StringBuffer buf = new StringBuffer();
+		int numSubCat = 0;
 		for (Object sw : switchCases) {
 
 			if (sw instanceof SwitchCase) {
@@ -73,8 +78,14 @@ public class SwitchStmtExtractor implements RuleExtractor {
 					String subName = expression.toString();
 					buf.append(Utils.bracketizeStr(subName));
 					buf.append(COMMA);
+
+					numSubCat++;
 				}
 			}
+		}
+
+		if (numSubCat < 2) {
+			return null;
 		}
 
 		int lastIndexOf = buf.lastIndexOf(COMMA);

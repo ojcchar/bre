@@ -1,16 +1,21 @@
 package edu.utdallas.seers.bre.javabre.extractor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
+import edu.utdallas.seers.bre.javabre.controller.NLPProcessor;
 import edu.utdallas.seers.bre.javabre.entity.BusinessRule;
 import edu.utdallas.seers.bre.javabre.entity.JavaFileInfo;
+import edu.utdallas.seers.bre.javabre.entity.words.Token;
 import edu.utdallas.seers.bre.javabre.entity.words.bt.Term;
 import edu.utdallas.seers.bre.javabre.util.Utils;
 
@@ -38,21 +43,25 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 		for (FieldDeclaration constField : constFields) {
 			try {
 
-				if (constToOmit.contains(constField)) {
-					continue;
-				}
+				// if (constToOmit.contains(constField)) {
+				// continue;
+				// }
 
 				List fragments = constField.fragments();
 				VariableDeclarationFragment frag = (VariableDeclarationFragment) fragments
 						.get(0);
 
-				String term1 = frag.getName().toString();
+				String term0 = frag.getName().toString();
 
-				if ("serialVersionUID".equalsIgnoreCase(term1)) {
+				if (omitConstant(term0)) {
 					continue;
 				}
 
-				if (Utils.isInValidIdent(term1, businessTerms, this.sysTerms)) {
+				if ("serialVersionUID".equalsIgnoreCase(term0)) {
+					continue;
+				}
+
+				if (Utils.isInValidIdent(term0, businessTerms, this.sysTerms)) {
 					continue;
 				}
 
@@ -69,8 +78,24 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 
 				String literal1 = initializer.toString();
 
+				if (initializer instanceof StringLiteral) {
+					if (Utils.isTermContained(literal1, this.sysTerms, false)) {
+						continue;
+					}
+				}
+
+				List<Token> processText = NLPProcessor.getInstance()
+						.processText(term0, true);
+				// System.out.println(processText);
+				if (Utils.isTermContained(
+						literal1,
+						new HashSet<Term>(Arrays.asList(new Term[] { new Term(
+								processText) })), false)) {
+					continue;
+				}
+
 				String brText = Utils.replaceTemplate(template, new String[] {
-						Utils.bracketizeStr(term1), literal1 });
+						Utils.bracketizeStr(term0), literal1 });
 
 				CompilationUnit cu = info.getCompilUnit();
 				BusinessRule rule = new BusinessRule(brText,
@@ -87,6 +112,24 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 		}
 
 		return rules;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private boolean omitConstant(String nameConst) {
+
+		for (FieldDeclaration constField : constToOmit) {
+			List fragments = constField.fragments();
+			VariableDeclarationFragment frag = (VariableDeclarationFragment) fragments
+					.get(0);
+
+			String term0 = frag.getName().toString();
+
+			if (nameConst.equals(term0)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }
