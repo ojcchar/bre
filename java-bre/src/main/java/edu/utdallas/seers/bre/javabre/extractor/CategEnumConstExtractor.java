@@ -19,8 +19,6 @@ import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class CategEnumConstExtractor implements RuleExtractor {
 
-	// private static final String TEMPLATE =
-	// "The {0} of a {1} is by definition one of the following: {2}.";
 	private static final String TEMPLATE = "A {0} is by definition one of the following: {2}.";
 	private Set<Term> sysTerms;
 	private Set<Term> businessTerms;
@@ -37,6 +35,7 @@ public class CategEnumConstExtractor implements RuleExtractor {
 		List<FieldDeclaration> constFields = info.getConstFields();
 		CompilationUnit unit = info.getCompilUnit();
 
+		// HEURISTIC
 		HashMap<String, List<FieldDeclaration>> constGroups = getConstantGroups(
 				constFields, unit);
 		List<BusinessRule> rules = new ArrayList<BusinessRule>();
@@ -75,7 +74,14 @@ public class CategEnumConstExtractor implements RuleExtractor {
 
 				this.constsRules.addAll(consts);
 
-				String brText = getBrText(subStr, consts);
+				String[] values = getValues(subStr, consts);
+
+				if (values == null) {
+					continue;
+				}
+
+				String brText = Utils.replaceTemplate(TEMPLATE, values);
+
 				BusinessRule rule = new BusinessRule(brText,
 						RuleType.CATEG_ENUMERATION);
 				rule.addLocation(info.getFile(),
@@ -102,6 +108,7 @@ public class CategEnumConstExtractor implements RuleExtractor {
 				numInv++;
 			}
 		}
+		// HEURISTIC
 		return (numInv / consts.size()) > 0.8;
 	}
 
@@ -115,7 +122,7 @@ public class CategEnumConstExtractor implements RuleExtractor {
 				maxEntry = entry;
 			}
 		}
-
+		// HEURISTIC
 		if (maxEntry.getValue() / consts.size() > 0.8) {
 			return maxEntry.getKey();
 		}
@@ -155,15 +162,13 @@ public class CategEnumConstExtractor implements RuleExtractor {
 	// return sortedMap;
 	// }
 
-	private String getBrText(String subStr, List<FieldDeclaration> consts) {
-		String[] values = getValues(subStr, consts);
-		String btText = Utils.replaceTemplate(TEMPLATE, values);
-		return btText;
-	}
-
 	private String[] getValues(String categStr, List<FieldDeclaration> consts) {
 
 		String term0 = Utils.bracketizeStr(categStr);
+
+		if (Utils.isInValidIdent(term0, businessTerms, sysTerms)) {
+			return null;
+		}
 
 		VariableDeclarationFragment a = ((VariableDeclarationFragment) consts
 				.get(0).fragments().get(0));

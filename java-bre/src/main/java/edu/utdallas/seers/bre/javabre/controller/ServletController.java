@@ -49,9 +49,9 @@ public class ServletController {
 	public ServletController(String[] sourceFolders, String[] classPaths,
 			File outFile, File bussFile, String[] processFolders, File sysFile)
 			throws IOException {
-		this.writer = new RulesWriter(outFile);
 		businessTerms = Utils.readTermsFile(bussFile);
 		sysTerms = Utils.readTermsFile(sysFile);
+		this.writer = new RulesWriter(outFile, sysTerms);
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
 		this.processFolders = processFolders;

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
@@ -43,10 +44,6 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 		for (FieldDeclaration constField : constFields) {
 			try {
 
-				// if (constToOmit.contains(constField)) {
-				// continue;
-				// }
-
 				List fragments = constField.fragments();
 				VariableDeclarationFragment frag = (VariableDeclarationFragment) fragments
 						.get(0);
@@ -54,10 +51,6 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 				String term0 = frag.getName().toString();
 
 				if (omitConstant(term0)) {
-					continue;
-				}
-
-				if ("serialVersionUID".equalsIgnoreCase(term0)) {
 					continue;
 				}
 
@@ -79,6 +72,22 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 				String literal1 = initializer.toString();
 
 				if (initializer instanceof StringLiteral) {
+
+					String value = literal1.substring(1, literal1.length() - 1);
+
+					// HEURISTIC
+					// ^[\p{Lu}\p{Nd}.]{0,4}$
+					Pattern p = Pattern.compile("^[\\p{Lu}\\p{Nd}.]{0,4}$",
+							Pattern.UNICODE_CHARACTER_CLASS);
+					if (p.matcher(value).matches()) {
+						continue;
+					}
+
+					// [(-?([0-9]+))]{0,4}$
+					if (Pattern.matches("[(-?([0-9]+))]{0,4}$", value)) {
+						continue;
+					}
+
 					if (Utils.isTermContained(literal1, this.sysTerms, false)) {
 						continue;
 					}

@@ -49,9 +49,9 @@ public class RulesController {
 	public RulesController(String[] sourceFolders, String[] classPaths,
 			File outFile, File bussFile, String[] processFolders, File sysFile)
 			throws IOException {
-		this.writer = new RulesWriter(outFile);
 		businessTerms = Utils.readTermsFile(bussFile);
 		sysTerms = Utils.readTermsFile(sysFile);
+		this.writer = new RulesWriter(outFile, sysTerms);
 		this.sourceFolders = sourceFolders;
 		this.classPaths = classPaths;
 		this.processFolders = processFolders;
@@ -159,7 +159,8 @@ public class RulesController {
 		List<BusinessRule> rules5 = extractor.extract(fileInfo);
 		writer.writeRules(rules5);
 
-		// extractor = new IfElseIfExtractor(businessTerms, sysTerms);
+		// RuleExtractor extractor = new IfElseIfExtractor(businessTerms,
+		// sysTerms);
 		// List<BusinessRule> rules6 = extractor.extract(fileInfo);
 		// writer.writeRules(rules6);
 	}

@@ -96,4 +96,8 @@ public class BusinessRule {
 		this.type = type;
 	}
 
+	public HashMap<String, List<Integer>> getFileLoc() {
+		return fileLoc;
+	}
+
 }
