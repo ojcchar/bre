@@ -83,6 +83,7 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 						continue;
 					}
 
+					// HEURISTIC
 					// [(-?([0-9]+))]{0,4}$
 					if (Pattern.matches("[(-?([0-9]+))]{0,4}$", value)) {
 						continue;
@@ -92,10 +93,10 @@ public class SymbolicLiteralExtractor implements RuleExtractor {
 						continue;
 					}
 				}
-
+				
 				List<Token> processText = NLPProcessor.getInstance()
 						.processText(term0, true);
-				// System.out.println(processText);
+				// HEURISTIC
 				if (Utils.isTermContained(
 						literal1,
 						new HashSet<Term>(Arrays.asList(new Term[] { new Term(

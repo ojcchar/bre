@@ -57,7 +57,7 @@ public class CategEnumConstExtractor implements RuleExtractor {
 							.fragments().get(0)).getName().toString();
 					String text2 = ((VariableDeclarationFragment) consts.get(j)
 							.fragments().get(0)).getName().toString();
-					String lcs = metho(text1, text2);
+					String lcs = getLongestCommonSubstring(text1, text2);
 
 					Integer f = freq.get(lcs);
 					if (f == null) {
@@ -200,7 +200,7 @@ public class CategEnumConstExtractor implements RuleExtractor {
 		return new String[] { term0, term1, buf.toString() };
 	}
 
-	private String metho(String text1, String text2) {
+	private String getLongestCommonSubstring(String text1, String text2) {
 		// read in two string from two files
 		int N1 = text1.length();
 		// int N2 = text2.length();

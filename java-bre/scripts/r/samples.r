@@ -1,23 +1,10 @@
-root = 'C:/Users/oxc140530/Documents/Google Drive/UTDALLAS/CS 6301 - Soft. Comprehension and Analysis/Project/BRE/Results/rules/'
+root = 'C:/Users/oxc140530/Documents/Google Drive/UTDALLAS/CS 6301 - Soft. Comprehension and Analysis/Project/BRE/Results/rules/final_rules/'
 #file_name = 'rules_openbravo_nofilters'
 #n_sample = 100
 #file_name = 'rules_openbravo'
-file_name = 'rules_openbravo_filters4'
-n_sample = 100
+file_name = 'rules_openbravo1'
+n_sample = 200
 patterns_file = paste(root, file_name,'.csv', sep = "")
-
-# CATEG_ENUMERATION    SYMBOL_LITERAL       VALID_VALUE 
-# 32               462                46 
-# > nrow(data)
-# [1] 540
-
-#CATEG_ENUMERATION    SYMBOL_LITERAL       VALID_VALUE 
-#               32              3312                64 
-#nrow = 3408
-
-#CATEG_ENUMERATION    SYMBOL_LITERAL       VALID_VALUE 
-#               80             14840              1146 
-#nrow = 16066
 
 #read the csv
 data = read.csv(patterns_file, sep = ";", header = TRUE)
