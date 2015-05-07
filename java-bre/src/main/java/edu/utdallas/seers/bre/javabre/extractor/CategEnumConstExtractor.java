@@ -19,7 +19,7 @@ import edu.utdallas.seers.bre.javabre.util.Utils;
 
 public class CategEnumConstExtractor implements RuleExtractor {
 
-	private static final String TEMPLATE = "A {0} is by definition one of the following: {2}.";
+	private static final String TEMPLATE = "A {0} is by definition one of the following: {1}.";
 	private Set<Term> sysTerms;
 	private Set<Term> businessTerms;
 	private List<FieldDeclaration> constsRules = new ArrayList<FieldDeclaration>();
@@ -109,7 +109,8 @@ public class CategEnumConstExtractor implements RuleExtractor {
 			}
 		}
 		// HEURISTIC
-		return (numInv / consts.size()) > 0.8;
+		boolean isInv = (numInv / consts.size()) > 0.8;
+		return isInv;
 	}
 
 	private String getCategory(HashMap<String, Integer> freq,
@@ -123,9 +124,13 @@ public class CategEnumConstExtractor implements RuleExtractor {
 			}
 		}
 		// HEURISTIC
-		if (maxEntry.getValue() / consts.size() > 0.8) {
+		if ((2 * maxEntry.getValue())
+				/ (Math.pow(consts.size(), 2) - consts.size()) > 0.8) {
 			return maxEntry.getKey();
 		}
+		// if (maxEntry.getValue() / consts.size() > 0.8) {
+		// return maxEntry.getKey();
+		// }
 
 		return null;
 	}
@@ -170,11 +175,6 @@ public class CategEnumConstExtractor implements RuleExtractor {
 			return null;
 		}
 
-		VariableDeclarationFragment a = ((VariableDeclarationFragment) consts
-				.get(0).fragments().get(0));
-		String term1 = a.resolveBinding().getDeclaringClass().getName();
-		term1 = Utils.bracketizeStr(term1);
-
 		final String COMMA = ", ";
 		StringBuffer buf = new StringBuffer();
 		for (FieldDeclaration tDcl : consts) {
@@ -197,7 +197,7 @@ public class CategEnumConstExtractor implements RuleExtractor {
 		lastIndexOf = buf.lastIndexOf(COMMA);
 		buf.replace(lastIndexOf, lastIndexOf + COMMA.length(), " or ");
 
-		return new String[] { term0, term1, buf.toString() };
+		return new String[] { term0, buf.toString() };
 	}
 
 	private String getLongestCommonSubstring(String text1, String text2) {
