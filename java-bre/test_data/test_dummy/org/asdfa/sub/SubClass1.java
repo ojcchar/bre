@@ -35,8 +35,21 @@ public class SubClass1 extends SuperClass implements SuperInterface {
 	public static final String STATUS_CLEARED = "RPPC";
 	public static final String STATUS_DEPOSIT = "RDNC";
 	public static final String STATUS_WITHDRAWN = "PWNC";
-	
+
 	public static final String IsAcctDimCentrally = "$IsAcctDimCentrally";
+
+	/** Amount Type - Invoice */
+	public static final int AMTTYPE_Gross = 0;
+	public static final int AMTTYPE_Net = 1;
+
+	public static final int AMTTYPE_Invoice = 0;
+	public static final int AMTTYPE_Allocation = 1;
+	public static final int AMTTYPE_Discount = 2;
+
+	public static final int AMTTYPE_Write1 = 3;
+	public static final int AMTTYPE_Write2 = 3;
+	public static final int AMTTYPE_Write3 = 3;
+	public static final int AMTTYPE_Write4 = 3;
 
 	public enum Day {
 		SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
