@@ -1,5 +1,6 @@
 accounting
 acct
+amt
 asset
 audit
 balance
@@ -23,6 +24,7 @@ delivery
 devolution
 discount
 document
+doctype
 email address
 employee
 exchange rate
@@ -40,7 +42,8 @@ payment
 period
 planner
 point of sale
-postal code 
+postal code
+precision
 price
 price list
 product
@@ -60,6 +63,7 @@ stock
 suborganization
 tax
 trx
+user
 warehouse
 work center
 work requirement
