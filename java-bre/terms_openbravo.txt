@@ -9,7 +9,7 @@ business partner
 cash
 cashbook 
 city
-comission
+commission
 commercial
 cost
 country
